@@ -553,10 +553,10 @@ def fpr_at_tpr(values_in: np.ndarray, values_out: np.ndarray, tpr: float) -> flo
 def set_seed(seed=42):
     # Set the seed for the random module
     random.seed(seed)
-    
+
     # Set the seed for numpy
     np.random.seed(seed)
-    
+
     # Set the seed for torch
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -565,6 +565,189 @@ def set_seed(seed=42):
     # Ensure deterministic behavior in some operations, which can slightly impact performance
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# MM++: Intermediate feature extraction utilities
+# ──────────────────────────────────────────────────────────────────────────────
+
+def get_layer_config(model, model_name):
+    """
+    Returns a list of (layer_name, module, pool_type) for intermediate layer hooking.
+
+    pool_type:
+      'cls'          – take dim-1 index 0 from [B, N, D] (ViT CLS token)
+      'mean_seq'     – mean over dim-1 from [B, N, D] or [B, H*W, C]
+      'mean_spatial' – mean over dims (2, 3) from [B, C, H, W]
+    """
+    name = model_name.lower()
+    layers = []
+
+    if any(x in name for x in ['vit_', 'deit3_', 'deit_', 'eva02_', 'xcit_']):
+        for i, block in enumerate(model.blocks):
+            layers.append((f'block_{i:02d}', block, 'cls'))
+        # Add the final LayerNorm output (post-norm CLS token = pre-logit feature)
+        # This is what M++ (Mahalanobis_norm) uses, giving ~5pp better AUROC than block_11 alone
+        if hasattr(model, 'norm'):
+            layers.append(('norm', model.norm, 'cls'))
+    elif 'mixer_' in name:
+        for i, block in enumerate(model.blocks):
+            layers.append((f'block_{i:02d}', block, 'mean_seq'))
+    elif 'swin' in name:
+        stage_list = model.layers if hasattr(model, 'layers') else model.stages
+        for i, stage in enumerate(stage_list):
+            layers.append((f'stage_{i}', stage, 'mean_seq'))
+    elif 'convnext' in name:
+        for i, stage in enumerate(model.stages):
+            layers.append((f'stage_{i}', stage, 'mean_spatial'))
+    elif any(x in name for x in ['resnet', 'resnext', 'resnetv2']):
+        for attr in ['layer1', 'layer2', 'layer3', 'layer4']:
+            if hasattr(model, attr):
+                layers.append((attr, getattr(model, attr), 'mean_spatial'))
+    elif 'efficient' in name:
+        for i, block_group in enumerate(model.blocks):
+            layers.append((f'blocks_{i:02d}', block_group, 'mean_spatial'))
+
+    return layers
+
+
+def _pool_hook_output(feat, pool_type):
+    """Pool a hooked feature tensor to shape [B, D]."""
+    if isinstance(feat, (tuple, list)):
+        feat = feat[0]
+    feat = feat.detach().float()
+    if pool_type == 'cls':
+        return feat[:, 0]                      # [B, N, D] → [B, D]
+    elif pool_type == 'mean_seq':
+        if feat.dim() == 3:
+            return feat.mean(dim=1)            # [B, N, D] → [B, D]
+        elif feat.dim() == 4:
+            return feat.mean(dim=(1, 2))       # [B, H, W, C] → [B, C]
+    elif pool_type == 'mean_spatial':
+        if feat.dim() == 4:
+            return feat.mean(dim=(2, 3))       # [B, C, H, W] → [B, C]
+        elif feat.dim() == 3:
+            return feat.mean(dim=1)
+    return feat
+
+
+def extract_intermediate_features(model, dataset, savepath):
+    """
+    Extract intermediate layer features via forward hooks and save to disk.
+
+    For each layer returned by get_layer_config(), registers a hook that
+    captures the output and reduces it to [B, D] via _pool_hook_output().
+
+    Saved files:
+        {savepath}/layer_names.json                    – ordered layer name list
+        {savepath}/layer_{name}_features_{i}.npy       – per-layer per-slice arrays
+
+    Args:
+        model:    timm model with .model_name and .batch_size attributes
+        dataset:  torch Dataset
+        savepath: output directory
+
+    Returns:
+        list of layer names (in order)
+    """
+    import json
+
+    layer_config = get_layer_config(model, model.model_name)
+    if not layer_config:
+        raise ValueError(
+            f'No intermediate layer configuration found for model: {model.model_name}. '
+            f'Add an entry in get_layer_config().'
+        )
+    layer_names = [name for name, _, _ in layer_config]
+
+    os.makedirs(savepath, exist_ok=True)
+    with open(os.path.join(savepath, 'layer_names.json'), 'w') as f:
+        json.dump(layer_names, f)
+
+    torch.backends.cudnn.benchmark = True
+    model.eval()
+
+    slice_length = 50000
+    n_slices = -((-len(dataset)) // slice_length)
+
+    for slice_i in range(n_slices):
+        all_done = all(
+            os.path.exists(os.path.join(savepath, f'layer_{n}_features_{slice_i}.npy'))
+            for n in layer_names
+        )
+        if all_done:
+            print(f'[MM++] Intermediate features slice {slice_i} already cached.')
+            continue
+
+        print(f'[MM++] Extracting intermediate features, slice {slice_i}/{n_slices}...')
+        indices = list(range(slice_i * slice_length,
+                             min((slice_i + 1) * slice_length, len(dataset))))
+        subset = torch.utils.data.Subset(dataset, indices)
+        dataloader = torch.utils.data.DataLoader(subset, batch_size=model.batch_size)
+
+        captured = {n: [] for n in layer_names}
+
+        hooks = []
+        for lname, module, pool_type in layer_config:
+            def make_hook(n, pt):
+                def hook(mod, inp, out):
+                    captured[n].append(_pool_hook_output(out, pt).cpu().numpy())
+                return hook
+            hooks.append(module.register_forward_hook(make_hook(lname, pool_type)))
+
+        with torch.no_grad():
+            for (x, _) in tqdm(dataloader, desc=f'Slice {slice_i}'):
+                model(x.cuda())
+
+        for h in hooks:
+            h.remove()
+
+        for lname in layer_names:
+            feats = np.concatenate(captured[lname], axis=0)
+            np.save(os.path.join(savepath, f'layer_{lname}_features_{slice_i}.npy'), feats)
+            captured[lname] = []  # free memory
+
+    return layer_names
+
+
+def load_intermediate_features(savepath, n_expected):
+    """
+    Load all per-layer features saved by extract_intermediate_features().
+
+    Args:
+        savepath:   directory containing layer_names.json and *.npy files
+        n_expected: expected total number of samples (sanity check)
+
+    Returns:
+        list of np.ndarray [N, D_l] (one per layer), or None if incomplete
+    """
+    import json
+
+    names_path = os.path.join(savepath, 'layer_names.json')
+    if not os.path.exists(names_path):
+        return None
+    with open(names_path) as f:
+        layer_names = json.load(f)
+
+    layer_feats = []
+    for lname in layer_names:
+        parts = sorted(
+            [fn for fn in os.listdir(savepath)
+             if fn.startswith(f'layer_{lname}_features_') and fn.endswith('.npy')],
+            key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+        )
+        if not parts:
+            return None
+        feats = np.concatenate(
+            [np.load(os.path.join(savepath, p)) for p in parts], axis=0
+        )
+        if len(feats) != n_expected:
+            print(f'[MM++] Warning: expected {n_expected} samples for layer {lname}, '
+                  f'got {len(feats)}. Re-run extract_intermediate_features.')
+            return None
+        layer_feats.append(feats.astype(np.float64))
+
+    return layer_feats
 
 
 

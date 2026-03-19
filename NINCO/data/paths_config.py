@@ -1,12 +1,12 @@
 import os
-ninco_folder = '/scratch/mmueller67/maha-norm/NINCO/NINCO'
-repo_path = '/scratch/mmueller67/maha-norm/NINCO'
+ninco_folder = '/home/rahim/exp/Data/NINCO/NINCO'
+repo_path = '/home/rahim/exp/multiLayer_maha_norm/NINCO'
 
 dset_location_dict = {
     'NINCO': ninco_folder
 }
 
-root_folder_0 = '/scratch/datasets'
+root_folder_0 = '/home/rahim/exp/Data'
 dset_location_suffix_dict_0 = {
     'ImageNet1K': 'imagenet',
 }

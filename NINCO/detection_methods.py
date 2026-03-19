@@ -1293,3 +1293,216 @@ def evaluate_mcm_clip(feature_id_val, feature_ood, clip_labels, labels_encoded_c
     score_ood = np.max(smax_ood, axis=1)
 
     return score_id, score_ood, val_acc
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# MM++: Multilayer Mahalanobis++ Distance (NeurIPS 2025)
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _fit_logreg_weights(X, y, w_init, lr=0.1, n_iter=200):
+    """
+    Optimize logistic regression weights via gradient descent with custom init.
+
+    Binary cross-entropy:  L(w) = -1/N Σ [y_i log p_i + (1-y_i) log(1-p_i)]
+    where p_i = sigmoid(X_i @ w).
+
+    Args:
+        X:      [N, L] score matrix
+        y:      [N] binary labels  (0 = ID, 1 = OOD)
+        w_init: [L] initial weights (inverse-std from Eq. 12)
+        lr:     learning rate
+        n_iter: gradient-descent steps
+
+    Returns:
+        w: [L] optimized weights
+    """
+    w = w_init.copy().astype(np.float64)
+    y = y.astype(np.float64)
+    N = len(y)
+    for _ in range(n_iter):
+        logits = X @ w
+        p = 1.0 / (1.0 + np.exp(-logits.clip(-500, 500)))  # sigmoid, numerically stable
+        grad = (X.T @ (p - y)) / N
+        w -= lr * grad
+    return w
+
+
+def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
+                          train_labels, path, n_classes=1000,
+                          logreg_val_frac=0.2, logreg_lr=0.1, logreg_n_iter=200):
+    """
+    MM++: Multilayer Mahalanobis++ Distance for OOD detection.
+
+    Algorithm (Section 3.2–3.3 of the paper):
+      For each intermediate layer l:
+        1. L2-normalize features onto unit hypersphere  (Eq. 4)
+        2. Compute class-conditional means              (Eq. 5)
+        3. Estimate tied covariance with Ledoit-Wolf    (Eq. 13)
+        4. Layer score S_l(x) = -min_c M++_{c,l}(x)   (Eq. 7)
+      Aggregate:
+        5. Initialize w_l = eps / std(S_l on ID val)   (Eq. 12)
+        6. Learn w_l via logistic regression on a
+           small OOD val split + all ID val             (Eq. 10-11)
+        7. S_total(x) = Σ_l w_l S_l(x)                (Eq. 8)
+
+    Training features are loaded one layer at a time from disk to avoid
+    holding all L × N_train × D in memory simultaneously.
+
+    Args:
+        train_inter_path: directory of per-layer training features
+                          (output of extract_intermediate_features on train set)
+        layer_feats_val:  list of L arrays [N_val, D_l]
+        layer_feats_ood:  list of L arrays [N_ood, D_l]
+        train_labels:     [N_train] integer class labels
+        path:             cache directory for computed statistics / ID scores
+        n_classes:        number of ID classes (1000 for ImageNet-1k)
+        logreg_val_frac:  fraction of OOD test data used to train w_l weights
+        logreg_lr:        learning rate for logistic regression gradient descent
+        logreg_n_iter:    number of gradient-descent steps
+
+    Returns:
+        score_id:  [N_val] MM++ scores for ID validation data
+        score_ood: [N_ood] MM++ scores for OOD data
+    """
+    from sklearn.covariance import LedoitWolf
+    import json
+
+    names_path = os.path.join(train_inter_path, 'layer_names.json')
+    if not os.path.exists(names_path):
+        raise FileNotFoundError(
+            f'layer_names.json not found in {train_inter_path}. '
+            f'Run extract_intermediate_features() first.'
+        )
+    with open(names_path) as f:
+        layer_names = json.load(f)
+
+    L = len(layer_names)
+    assert len(layer_feats_val) == L, \
+        f'Expected {L} val-layer arrays, got {len(layer_feats_val)}'
+    assert len(layer_feats_ood) == L, \
+        f'Expected {L} OOD-layer arrays, got {len(layer_feats_ood)}'
+
+    layer_scores_val = []
+    layer_scores_ood = []
+
+    for l, layer_name in enumerate(layer_names):
+        tag       = f'mm_pp_{layer_name}'
+        mean_path = os.path.join(path, f'{tag}_mean.npy')
+        prec_path = os.path.join(path, f'{tag}_prec.npy')
+
+        # ── Fit class means + Ledoit-Wolf precision (cached) ─────────────────
+        if os.path.exists(mean_path) and os.path.exists(prec_path):
+            mean_l = np.load(mean_path)
+            prec_l = np.load(prec_path)
+        else:
+            print(f'[MM++] Layer {l+1}/{L} ({layer_name}): loading training features...')
+            parts = sorted(
+                [fn for fn in os.listdir(train_inter_path)
+                 if fn.startswith(f'layer_{layer_name}_features_') and fn.endswith('.npy')],
+                key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+            )
+            if not parts:
+                raise FileNotFoundError(
+                    f'No training features found for layer {layer_name} in {train_inter_path}'
+                )
+            f_train = np.concatenate(
+                [np.load(os.path.join(train_inter_path, p)) for p in parts], axis=0
+            ).astype(np.float64)
+
+            # L2-normalize (Eq. 4)
+            norms = np.linalg.norm(f_train, axis=-1, keepdims=True).clip(min=1e-10)
+            f_train /= norms
+
+            print(f'[MM++] Layer {l+1}/{L} ({layer_name}): computing class means...')
+            train_means = []
+            centered    = []
+            for c in tqdm(range(n_classes), desc=f'  Layer {layer_name}', leave=False):
+                fs = f_train[train_labels == c]
+                m  = fs.mean(axis=0) if len(fs) > 0 else np.zeros(f_train.shape[1])
+                train_means.append(m)
+                if len(fs) > 0:
+                    centered.extend(fs - m)
+
+            print(f'[MM++] Layer {l+1}/{L} ({layer_name}): Ledoit-Wolf shrinkage...')
+            lw = LedoitWolf(assume_centered=True)
+            lw.fit(np.array(centered).astype(np.float64))
+
+            mean_l = np.array(train_means)
+            prec_l = lw.precision_
+            np.save(mean_path, mean_l)
+            np.save(prec_path, prec_l)
+            del f_train, centered  # free memory
+
+        # ── Move to GPU ───────────────────────────────────────────────────────
+        mean_t = torch.from_numpy(mean_l).cuda().double()
+        prec_t = torch.from_numpy(prec_l).cuda().double()
+
+        def _maha_scores(feats_np):
+            """Returns [N] array of -min_c M++_{c,l}(x) for each sample."""
+            feats_np = feats_np.astype(np.float64)
+            norms = np.linalg.norm(feats_np, axis=-1, keepdims=True).clip(min=1e-10)
+            feats_np = feats_np / norms
+            scores = []
+            for f in torch.from_numpy(feats_np).cuda().double():
+                diff = f - mean_t                         # [C, D]
+                d    = ((diff @ prec_t) * diff).sum(-1)   # [C]
+                scores.append(-d.min().cpu().item())
+            return np.array(scores)
+
+        # ── ID val scores (cached per layer) ─────────────────────────────────
+        id_score_path = os.path.join(path, f'{tag}_id_scores.npy')
+        if os.path.exists(id_score_path):
+            s_val_l = np.load(id_score_path)
+        else:
+            print(f'[MM++] Layer {l+1}/{L} ({layer_name}): computing ID scores...')
+            s_val_l = _maha_scores(layer_feats_val[l])
+            np.save(id_score_path, s_val_l)
+
+        # ── OOD scores ────────────────────────────────────────────────────────
+        print(f'[MM++] Layer {l+1}/{L} ({layer_name}): computing OOD scores...')
+        s_ood_l = _maha_scores(layer_feats_ood[l])
+
+        layer_scores_val.append(s_val_l)
+        layer_scores_ood.append(s_ood_l)
+
+    # ── Aggregate scores across layers ───────────────────────────────────────
+    from sklearn.linear_model import LogisticRegression
+
+    S_val = np.stack(layer_scores_val)   # [L, N_val]
+    S_ood = np.stack(layer_scores_ood)   # [L, N_ood]
+
+    # Standardize per-layer scores using ID val statistics.
+    # Raw scores are large negative numbers (~-700 to -1500); normalizing avoids
+    # gradient explosion and makes the logistic regression well-conditioned.
+    mean_id = S_val.mean(axis=1, keepdims=True)   # [L, 1]
+    std_id  = S_val.std(axis=1, keepdims=True).clip(min=1e-8)  # [L, 1]
+    Z_val   = (S_val - mean_id) / std_id          # [L, N_val]  ID ~ N(0,1)
+    Z_ood   = (S_ood - mean_id) / std_id          # [L, N_ood]  OOD shifts negative
+
+    # Build logistic-regression training set:
+    #   y=1 (ID)  : all ID val scores
+    #   y=0 (OOD) : random logreg_val_frac of OOD test scores
+    # Convention y=1 for ID means logistic regression learns w > 0 (ID has z > OOD z),
+    # so the final score Z@w is higher for ID — compatible with auroc_ood(id, ood).
+    N_ood       = S_ood.shape[1]
+    n_logreg    = max(1, int(logreg_val_frac * N_ood))
+    rng         = np.random.default_rng(seed=42)
+    ood_val_idx = rng.choice(N_ood, size=n_logreg, replace=False)
+
+    X_lr = np.concatenate([Z_val.T, Z_ood[:, ood_val_idx].T], axis=0)  # [N_id + n_lr, L]
+    y_lr = np.array([1] * Z_val.shape[1] + [0] * n_logreg, dtype=np.int32)
+
+    print(f'[MM++] Fitting logistic regression '
+          f'({Z_val.shape[1]} ID + {n_logreg} OOD val samples, {L} layers)...')
+    clf = LogisticRegression(
+        penalty=None, solver='lbfgs', max_iter=1000,
+        class_weight='balanced', random_state=42, fit_intercept=False,
+    )
+    clf.fit(X_lr, y_lr)
+    w = clf.coef_[0]  # [L]
+    print(f'[MM++] Learned weights: {w.round(3)}')
+
+    score_id  = Z_val.T @ w   # [N_val]  higher = more ID-like
+    score_ood = Z_ood.T @ w   # [N_ood]
+
+    return score_id, score_ood

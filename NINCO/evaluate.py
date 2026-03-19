@@ -8,7 +8,9 @@ from scipy.special import softmax
 from torch.utils.data.dataset import Dataset
 from timm.data import resolve_data_config
 from timm.data.transforms_factory import create_transform
-from utils import extract_features, extract_clip_embeddings, timm_models, fpr_at_tpr, auroc_ood, set_seed
+from utils import (extract_features, extract_clip_embeddings, timm_models,
+                   fpr_at_tpr, auroc_ood, set_seed,
+                   extract_intermediate_features, load_intermediate_features)
 import utils
 from resnet50 import ResNetNNGUIDE, ResNetSupCon
 import data.paths_config
@@ -40,6 +42,7 @@ class OODScore:
     'nan',
     'fdbd',
     'gen',
+    'MM_plus_plus',
     ]
         self.clip_transform = None
         self.val_acc = -99
@@ -62,8 +65,13 @@ class OODScore:
             'NINCO_popular_datasets_subsamples': datasets.NINCOPopularDatasetsSubsamples,
         }
 
-        self.dataset_in_train = dset.ImageFolder(os.path.join(self.path_to_imagenet, 'train'), transform=test_transform)
-        self.dataset_in_val = dset.ImageFolder(os.path.join(self.path_to_imagenet, 'val'), transform=test_transform)
+        train_dir = os.path.join(self.path_to_imagenet, 'train')
+        val_dir = os.path.join(self.path_to_imagenet, 'val')
+        if not os.path.isdir(train_dir):
+            print(f"[Warning] ImageNet train not found at {train_dir}; using val as train fallback.")
+            train_dir = val_dir
+        self.dataset_in_train = dset.ImageFolder(train_dir, transform=test_transform)
+        self.dataset_in_val = dset.ImageFolder(val_dir, transform=test_transform)
         if dataset.endswith('.csv'):
             if ood_dataset_paths_prefix == None:
                 self.dataset_out = datasets.ImageCSVDataset(image_table_csv=dataset, transform=test_transform, )
@@ -149,6 +157,39 @@ class OODScore:
             print('Computing softmax...')
             self.softmax_ood = softmax(self.logits_ood, axis=-1)
             print('Done')
+
+    def get_intermediate_features(self, model, train=True, val=True, ood=True, overwrite='no'):
+        """Extract and cache intermediate (per-layer) features for MM++."""
+        n_layers = len(utils.get_layer_config(model, model.model_name))
+
+        if train:
+            save_path = os.path.join(self.path_to_cache, 'cache_train_inter', model.model_name)
+            inter = load_intermediate_features(save_path, n_expected=len(self.dataset_in_train))
+            if inter is None or len(inter) != n_layers or overwrite not in {'no', 'ood', 'notrain'}:
+                print('[MM++] Train intermediate features not complete, extracting...')
+                extract_intermediate_features(model, self.dataset_in_train, save_path)
+                inter = load_intermediate_features(save_path, n_expected=len(self.dataset_in_train))
+            self.inter_train_path   = save_path
+            self.inter_feats_train  = inter  # list of [N_train, D_l] — kept for reference
+
+        if val:
+            save_path = os.path.join(self.path_to_cache, 'cache_val_inter', model.model_name)
+            inter = load_intermediate_features(save_path, n_expected=len(self.dataset_in_val))
+            if inter is None or len(inter) != n_layers or overwrite not in {'no', 'ood'}:
+                print('[MM++] Val intermediate features not complete, extracting...')
+                extract_intermediate_features(model, self.dataset_in_val, save_path)
+                inter = load_intermediate_features(save_path, n_expected=len(self.dataset_in_val))
+            self.inter_feats_val = inter  # list of [N_val, D_l]
+
+        if ood:
+            save_path = os.path.join(self.path_to_cache, 'cache_ood_inter',
+                                     model.model_name, self.dataset_out.__name__)
+            inter = load_intermediate_features(save_path, n_expected=len(self.dataset_out))
+            if inter is None or len(inter) != n_layers or overwrite not in {'no'}:
+                print(f'[MM++] OOD intermediate features ({self.dataset}) not complete, extracting...')
+                extract_intermediate_features(model, self.dataset_out, save_path)
+                inter = load_intermediate_features(save_path, n_expected=len(self.dataset_out))
+            self.inter_feats_ood = inter  # list of [N_ood, D_l]
 
     def get_features_clip(self, model, train=False, val=True, ood=True, overwrite='no',openclip=False):
         if train:
@@ -331,6 +372,14 @@ class OODScore:
                 scores_id, scores_ood = evaluate_neco(self.feature_id_train, self.feature_id_val, self.feature_ood, self.logits_id_val, self.logits_ood, path=path,use_logit=True)
             elif method=='gmm':
                 scores_id, scores_ood = evaluate_gmm(self.feature_id_train, self.feature_id_val, self.feature_ood,self.train_labels,path=path,normalize=False)
+            elif method == 'MM_plus_plus':
+                scores_id, scores_ood = evaluate_MM_plus_plus(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                )
             else:
                 raise NotImplementedError(f'Method {method} not implemented.')
             
@@ -393,6 +442,7 @@ methods_train_usage = {
     'nan_pos':True,
     'fdbd':True,
     'gen':False,
+    'MM_plus_plus': True,
 }
 
 parser = argparse.ArgumentParser(description='OOD Evaluation on NINCO')
@@ -434,6 +484,9 @@ def main():
                 print('Task is set up.')
                 task.get_features_and_logits(model, ood=True, train=need_train_outputs,
                                             overwrite=args.overwrite_model_outputs)
+                if 'MM_plus_plus' in methods:
+                    task.get_intermediate_features(model, ood=True, train=True,
+                                                   overwrite=args.overwrite_model_outputs)
                 OOD_classes = task.dataset_out.classes
                 task.evaluate(model, OOD_classes=OOD_classes, methods=methods)
                 print(f'# ood classes: {len(OOD_classes)}')
@@ -453,6 +506,9 @@ def main():
                 print('Task is set up.')
                 task.get_features_and_logits(model, ood=True, train=need_train_outputs,
                                             overwrite=args.overwrite_model_outputs)
+                if 'MM_plus_plus' in methods:
+                    task.get_intermediate_features(model, ood=True, train=True,
+                                                   overwrite=args.overwrite_model_outputs)
                 #if current_dataset.endswith('.csv'):
                 OOD_classes = task.dataset_out.classes
                 task.evaluate(model, OOD_classes=OOD_classes, methods=methods)
