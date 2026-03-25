@@ -253,7 +253,7 @@ class OODScore:
             self.labels_ood = predictions_ood['labels_true']
             print('OOD done.')
 
-    def evaluate(self, model, OOD_classes, methods=['MSP']):
+    def evaluate(self, model, OOD_classes, methods=['MSP'], n_bootstrap_seeds=3):
         # patly adapted from https://github.com/haoqiwang/vim/blob/master/benchmark.py
         path = os.path.join(self.path_to_cache, 'cache_methods', model.model_name)
         if not os.path.exists(path):
@@ -400,9 +400,22 @@ class OODScore:
             methods_results[method]['ood_classes_mean_fpr_at_95'] = np.mean(
                 np.array([methods_results[method][c]['fpr_at_95'] for c in OOD_classes]))
 
-            print('{} on {} evaluated with {}.\nAuroc: {}\nfpr at 95: {}\naccuracy val: {}\n accuracy train: {}'.format(
-            method, self.dataset, model.model_name, methods_results[method]['ood_classes_mean_auroc'],
-            methods_results[method]['ood_classes_mean_fpr_at_95'], self.val_acc, self.train_acc))
+            auroc_pt  = methods_results[method]['ood_classes_mean_auroc']
+            fpr_pt    = methods_results[method]['ood_classes_mean_fpr_at_95']
+            ci = bootstrap_ci(scores_id, scores_ood,
+                              seeds=tuple(range(n_bootstrap_seeds)), n_bootstrap=1000)
+            methods_results[method]['bootstrap_ci'] = ci
+            print(
+                '{} on {} evaluated with {}.\n'
+                'Auroc: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
+                'fpr at 95: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
+                'accuracy val: {}\n accuracy train: {}'.format(
+                    method, self.dataset, model.model_name,
+                    auroc_pt,  ci['auroc_ci'][0], ci['auroc_ci'][1],
+                    fpr_pt,    ci['fpr_ci'][0],   ci['fpr_ci'][1],
+                    self.val_acc, self.train_acc,
+                )
+            )
         # save results
         savepath = os.path.join(self.path_to_cache, 'scores', model.model_name, self.dataset_out.__name__)
         if not os.path.exists(savepath):
@@ -411,6 +424,41 @@ class OODScore:
         np.savez(os.path.join(savepath, f'E{eval_time}.npz'), methods_results=methods_results,
                  id_labels=self.labels_id_val, ood_labels=self.labels_ood, ood_classes=OOD_classes,
                  val_acc=self.val_acc, train_acc=self.train_acc)
+
+
+def bootstrap_ci(scores_id, scores_ood, seeds=(0, 1, 2), n_bootstrap=1000):
+    """
+    Bootstrap 95% CI for AUROC and FPR@95 across multiple random seeds.
+
+    Each seed draws n_bootstrap independent resamples (with replacement) of the
+    ID and OOD score vectors, producing a total of len(seeds)*n_bootstrap estimates.
+    The 2.5th / 97.5th percentiles of all estimates form the 95% CI.
+
+    Args:
+        scores_id:   [N_id] ID validation scores
+        scores_ood:  [N_ood] OOD test scores
+        seeds:       iterable of integer RNG seeds (paper requires ≥ 3)
+        n_bootstrap: number of resamples per seed
+
+    Returns:
+        dict with keys auroc_mean, auroc_ci, fpr_mean, fpr_ci
+    """
+    aurocs, fprs = [], []
+    for seed in seeds:
+        rng = np.random.default_rng(seed)
+        for _ in range(n_bootstrap):
+            sid = scores_id[rng.integers(0, len(scores_id), len(scores_id))]
+            sod = scores_ood[rng.integers(0, len(scores_ood), len(scores_ood))]
+            aurocs.append(auroc_ood(sid, sod))
+            fprs.append(fpr_at_tpr(sid, sod, 0.95))
+    return {
+        'auroc_mean': float(np.mean(aurocs)),
+        'auroc_ci':   (float(np.percentile(aurocs, 2.5)),
+                       float(np.percentile(aurocs, 97.5))),
+        'fpr_mean':   float(np.mean(fprs)),
+        'fpr_ci':     (float(np.percentile(fprs, 2.5)),
+                       float(np.percentile(fprs, 97.5))),
+    }
 
 
 methods_train_usage = {
@@ -456,6 +504,8 @@ parser.add_argument('--path_to_imagenet', default=data.paths_config.dset_locatio
 parser.add_argument('--path_to_cache', default='./cache')
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--seed', type=int, default=99)
+parser.add_argument('--n_bootstrap_seeds', type=int, default=3,
+                    help='Number of RNG seeds for bootstrap CI (paper requires ≥ 3)')
 
 
 def main():
@@ -488,7 +538,8 @@ def main():
                     task.get_intermediate_features(model, ood=True, train=True,
                                                    overwrite=args.overwrite_model_outputs)
                 OOD_classes = task.dataset_out.classes
-                task.evaluate(model, OOD_classes=OOD_classes, methods=methods)
+                task.evaluate(model, OOD_classes=OOD_classes, methods=methods,
+                              n_bootstrap_seeds=args.n_bootstrap_seeds)
                 print(f'# ood classes: {len(OOD_classes)}')
             elif model_name=='rn50supcon':
                 model = ResNetSupCon()
@@ -511,7 +562,8 @@ def main():
                                                    overwrite=args.overwrite_model_outputs)
                 #if current_dataset.endswith('.csv'):
                 OOD_classes = task.dataset_out.classes
-                task.evaluate(model, OOD_classes=OOD_classes, methods=methods)
+                task.evaluate(model, OOD_classes=OOD_classes, methods=methods,
+                              n_bootstrap_seeds=args.n_bootstrap_seeds)
                 print(f'# ood classes: {len(OOD_classes)}')
             else:
                 raise NotImplementedError(

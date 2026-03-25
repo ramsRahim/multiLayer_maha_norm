@@ -1382,18 +1382,22 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
     assert len(layer_feats_ood) == L, \
         f'Expected {L} OOD-layer arrays, got {len(layer_feats_ood)}'
 
-    layer_scores_val = []
-    layer_scores_ood = []
+    layer_scores_val   = []
+    layer_scores_ood   = []
+    effective_ranks    = []   # within-class ER  (kept for diagnostics)
+    effective_ranks_b  = []   # between-class ER (used for aggregation)
 
     for l, layer_name in enumerate(layer_names):
         tag       = f'mm_pp_{layer_name}'
         mean_path = os.path.join(path, f'{tag}_mean.npy')
         prec_path = os.path.join(path, f'{tag}_prec.npy')
+        er_path   = os.path.join(path, f'{tag}_er.npy')
 
-        # ── Fit class means + Ledoit-Wolf precision (cached) ─────────────────
-        if os.path.exists(mean_path) and os.path.exists(prec_path):
+        # ── Fit class means + Ledoit-Wolf precision + effective rank (cached) ─
+        if os.path.exists(mean_path) and os.path.exists(prec_path) and os.path.exists(er_path):
             mean_l = np.load(mean_path)
             prec_l = np.load(prec_path)
+            er_l   = float(np.load(er_path))
         else:
             print(f'[MM++] Layer {l+1}/{L} ({layer_name}): loading training features...')
             parts = sorted(
@@ -1423,15 +1427,52 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
                 if len(fs) > 0:
                     centered.extend(fs - m)
 
+            centered_arr = np.array(centered, dtype=np.float64)  # [N, D]
+
             print(f'[MM++] Layer {l+1}/{L} ({layer_name}): Ledoit-Wolf shrinkage...')
             lw = LedoitWolf(assume_centered=True)
-            lw.fit(np.array(centered).astype(np.float64))
+            lw.fit(centered_arr)
+
+            # ── Effective rank (Eqs. 7–8) via eigenspectrum of tied covariance ─
+            # Dual-SVD: Gram matrix [N×N] if N<D, else direct D×D covariance.
+            # Tied covariance = class-mean-centered, L2-normalized features.
+            N_total, D = centered_arr.shape
+            if N_total < D:
+                G = centered_arr @ centered_arr.T / N_total       # [N, N]
+                eigvals = np.linalg.eigvalsh(G)
+            else:
+                cov = centered_arr.T @ centered_arr / N_total     # [D, D]
+                eigvals = np.linalg.eigvalsh(cov)
+            eigvals = eigvals[eigvals > 0]
+            eigvals /= eigvals.sum()
+            er_l = float(np.exp(-np.dot(eigvals, np.log(eigvals))))
 
             mean_l = np.array(train_means)
             prec_l = lw.precision_
             np.save(mean_path, mean_l)
             np.save(prec_path, prec_l)
-            del f_train, centered  # free memory
+            np.save(er_path, er_l)
+            del f_train, centered, centered_arr  # free memory
+
+        effective_ranks.append(er_l)
+
+        # ── Between-class ER: ER of class-means covariance (cached) ──────────
+        # Measures how well-spread class means are on the hypersphere.
+        # Increases with depth for both ViT and CNN → fixes the inverted-ER problem.
+        er_b_path = os.path.join(path, f'{tag}_er_b.npy')
+        if os.path.exists(er_b_path):
+            er_b_l = float(np.load(er_b_path))
+        else:
+            mu_global = mean_l.mean(axis=0)                        # [D]
+            M = (mean_l - mu_global).astype(np.float64)            # [C, D]
+            C_cls = M.shape[0]
+            sigma_b = M.T @ M / C_cls                              # [D, D]
+            ev = np.linalg.eigvalsh(sigma_b)
+            ev = ev[ev > 0]
+            ev /= ev.sum()
+            er_b_l = float(np.exp(-np.dot(ev, np.log(ev))))
+            np.save(er_b_path, er_b_l)
+        effective_ranks_b.append(er_b_l)
 
         # ── Move to GPU ───────────────────────────────────────────────────────
         mean_t = torch.from_numpy(mean_l).cuda().double()
@@ -1465,44 +1506,35 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
         layer_scores_val.append(s_val_l)
         layer_scores_ood.append(s_ood_l)
 
-    # ── Aggregate scores across layers ───────────────────────────────────────
-    from sklearn.linear_model import LogisticRegression
+    # ── Boltzmann rank-weighted sparsification (Eqs. 7–11, ER_B variant) ─────
+    # Use between-class ER (ER_B) instead of total/within ER.
+    # ER_B = ER of class-means covariance; increases with depth for both ViT and CNN
+    # because class means become more spread as the network builds semantic structure.
+    # This fixes the inverted-ER problem in isotropic ViTs, where total ER increases
+    # with depth (early blocks uninformative, not collapsed), while remaining valid
+    # for CNNs (ER_B also increases with depth as classes separate).
+    er   = np.array(effective_ranks)    # [L]  within-class ER  (diagnostic only)
+    er_b = np.array(effective_ranks_b)  # [L]  between-class ER (used for weighting)
 
+    # Adaptive temperature: largest adjacent log-gain in ER_B (Eq. 10 adapted)
+    tau = float(np.max(np.log(er_b[1:] / er_b[:-1].clip(min=1e-8))))
+
+    # Boltzmann with positive sign: higher ER_B → more weight (Eq. 9 adapted)
+    log_w = +tau * er_b
+    log_w -= log_w.max()   # numerical stability
+    w = np.exp(log_w)
+    w /= w.sum()
+
+    print(f'[MM++] Within-class ER:        {er.round(2)}')
+    print(f'[MM++] Between-class ER (ER_B):{er_b.round(2)}')
+    print(f'[MM++] Adaptive temperature:   τ = {tau:.4f}')
+    print(f'[MM++] Aggregation weights:    {w.round(4)}')
+
+    # Eq. 11: S_total(x) = Σ_l w_l · S_l(x)
     S_val = np.stack(layer_scores_val)   # [L, N_val]
     S_ood = np.stack(layer_scores_ood)   # [L, N_ood]
 
-    # Standardize per-layer scores using ID val statistics.
-    # Raw scores are large negative numbers (~-700 to -1500); normalizing avoids
-    # gradient explosion and makes the logistic regression well-conditioned.
-    mean_id = S_val.mean(axis=1, keepdims=True)   # [L, 1]
-    std_id  = S_val.std(axis=1, keepdims=True).clip(min=1e-8)  # [L, 1]
-    Z_val   = (S_val - mean_id) / std_id          # [L, N_val]  ID ~ N(0,1)
-    Z_ood   = (S_ood - mean_id) / std_id          # [L, N_ood]  OOD shifts negative
-
-    # Build logistic-regression training set:
-    #   y=1 (ID)  : all ID val scores
-    #   y=0 (OOD) : random logreg_val_frac of OOD test scores
-    # Convention y=1 for ID means logistic regression learns w > 0 (ID has z > OOD z),
-    # so the final score Z@w is higher for ID — compatible with auroc_ood(id, ood).
-    N_ood       = S_ood.shape[1]
-    n_logreg    = max(1, int(logreg_val_frac * N_ood))
-    rng         = np.random.default_rng(seed=42)
-    ood_val_idx = rng.choice(N_ood, size=n_logreg, replace=False)
-
-    X_lr = np.concatenate([Z_val.T, Z_ood[:, ood_val_idx].T], axis=0)  # [N_id + n_lr, L]
-    y_lr = np.array([1] * Z_val.shape[1] + [0] * n_logreg, dtype=np.int32)
-
-    print(f'[MM++] Fitting logistic regression '
-          f'({Z_val.shape[1]} ID + {n_logreg} OOD val samples, {L} layers)...')
-    clf = LogisticRegression(
-        penalty=None, solver='lbfgs', max_iter=1000,
-        class_weight='balanced', random_state=42, fit_intercept=False,
-    )
-    clf.fit(X_lr, y_lr)
-    w = clf.coef_[0]  # [L]
-    print(f'[MM++] Learned weights: {w.round(3)}')
-
-    score_id  = Z_val.T @ w   # [N_val]  higher = more ID-like
-    score_ood = Z_ood.T @ w   # [N_ood]
+    score_id  = w @ S_val   # [N_val]
+    score_ood = w @ S_ood   # [N_ood]
 
     return score_id, score_ood
