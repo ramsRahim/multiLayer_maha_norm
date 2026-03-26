@@ -43,6 +43,12 @@ class OODScore:
     'fdbd',
     'gen',
     'MM_plus_plus',
+    'MM_plus_plus_feat',
+    'MM_plus_plus_feat_bolt',
+    'MM_plus_plus_feat_top3',
+    'MM_plus_plus_cat2',
+    'MM_plus_plus_cat3',
+    'MM_plus_plus_anchored',
     ]
         self.clip_transform = None
         self.val_acc = -99
@@ -380,6 +386,66 @@ class OODScore:
                     train_labels=self.train_labels,
                     path=path,
                 )
+            elif method == 'MM_plus_plus_feat':
+                scores_id, scores_ood = evaluate_MM_plus_plus_feat(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                )
+            elif method == 'MM_plus_plus_feat_bolt':
+                # Boltzmann-sharpened weights: adaptive τ from ER_B log-gains
+                # concentrates fusion on the top 2-3 layers
+                scores_id, scores_ood = evaluate_MM_plus_plus_feat(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    boltzmann_temp=0.9410,   # adaptive τ from MM++ ER_B
+                )
+            elif method == 'MM_plus_plus_feat_top3':
+                # Top-3 layers by ER_B (block_10, block_11, norm), linear weights
+                scores_id, scores_ood = evaluate_MM_plus_plus_feat(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    top_k=3,
+                )
+            elif method == 'MM_plus_plus_cat2':
+                # Concatenate top-2 layers (block_11+norm) → 1536-dim Mahalanobis
+                scores_id, scores_ood = evaluate_MM_plus_plus_concat(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    top_k=2,
+                )
+            elif method == 'MM_plus_plus_cat3':
+                # Concatenate top-3 layers (block_10+11+norm) → 2304-dim Mahalanobis
+                scores_id, scores_ood = evaluate_MM_plus_plus_concat(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    top_k=3,
+                )
+            elif method == 'MM_plus_plus_anchored':
+                # Final-layer anchor: S = α·S_final + (1-α)·Σ w_l·S_l
+                # Fully unsupervised; weights from ER_B; α=0.5 by default.
+                scores_id, scores_ood = evaluate_MM_plus_plus_anchored(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    alpha=0.5,
+                )
             else:
                 raise NotImplementedError(f'Method {method} not implemented.')
             
@@ -491,6 +557,12 @@ methods_train_usage = {
     'fdbd':True,
     'gen':False,
     'MM_plus_plus': True,
+    'MM_plus_plus_feat': True,
+    'MM_plus_plus_feat_bolt': True,
+    'MM_plus_plus_feat_top3': True,
+    'MM_plus_plus_cat2': True,
+    'MM_plus_plus_cat3': True,
+    'MM_plus_plus_anchored': True,
 }
 
 parser = argparse.ArgumentParser(description='OOD Evaluation on NINCO')
@@ -534,7 +606,7 @@ def main():
                 print('Task is set up.')
                 task.get_features_and_logits(model, ood=True, train=need_train_outputs,
                                             overwrite=args.overwrite_model_outputs)
-                if 'MM_plus_plus' in methods:
+                if any(m.startswith('MM_plus_plus') for m in methods):
                     task.get_intermediate_features(model, ood=True, train=True,
                                                    overwrite=args.overwrite_model_outputs)
                 OOD_classes = task.dataset_out.classes
@@ -557,7 +629,7 @@ def main():
                 print('Task is set up.')
                 task.get_features_and_logits(model, ood=True, train=need_train_outputs,
                                             overwrite=args.overwrite_model_outputs)
-                if 'MM_plus_plus' in methods:
+                if any(m.startswith('MM_plus_plus') for m in methods):
                     task.get_intermediate_features(model, ood=True, train=True,
                                                    overwrite=args.overwrite_model_outputs)
                 #if current_dataset.endswith('.csv'):
