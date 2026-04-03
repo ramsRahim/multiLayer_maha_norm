@@ -49,6 +49,20 @@ class OODScore:
     'MM_plus_plus_cat2',
     'MM_plus_plus_cat3',
     'MM_plus_plus_anchored',
+    'MM_plus_plus_zscore',
+    'MM_plus_plus_topk',
+    'MM_plus_plus_relative',
+    'MM_plus_plus_relative_zscore',
+    'MM_plus_plus_paper_K1',
+    'MM_plus_plus_paper_K2',
+    'MM_plus_plus_paper_K3',
+    'MM_plus_plus_paper_K2_zscore',
+    'MM_plus_plus_paper_K3_zscore',
+    'MM_plus_plus_xmaha_erb',
+    'MM_plus_plus_xmaha_var',
+    'MM_plus_plus_logrank_K1',
+    'MM_plus_plus_logrank_K2',
+    'MM_plus_plus_logrank_K3',
     ]
         self.clip_transform = None
         self.val_acc = -99
@@ -387,6 +401,10 @@ class OODScore:
                     path=path,
                 )
             elif method == 'MM_plus_plus_feat':
+                # Equal-width backbones: ER_B-weighted feature mixing.
+                # Heterogeneous backbones (e.g. ResNet stages): fallback to
+                # L2-normalise + concatenate the default top-2 ER_B stages
+                # + joint Mahalanobis.
                 scores_id, scores_ood = evaluate_MM_plus_plus_feat(
                     train_inter_path=self.inter_train_path,
                     layer_feats_val=self.inter_feats_val,
@@ -395,8 +413,9 @@ class OODScore:
                     path=path,
                 )
             elif method == 'MM_plus_plus_feat_bolt':
-                # Boltzmann-sharpened weights: adaptive τ from ER_B log-gains
-                # concentrates fusion on the top 2-3 layers
+                # Boltzmann-sharpened ER_B weights inside the selected
+                # same-dimension fusion group. For heterogeneous backbones,
+                # the feature path falls back to concatenation.
                 scores_id, scores_ood = evaluate_MM_plus_plus_feat(
                     train_inter_path=self.inter_train_path,
                     layer_feats_val=self.inter_feats_val,
@@ -406,7 +425,9 @@ class OODScore:
                     boltzmann_temp=0.9410,   # adaptive τ from MM++ ER_B
                 )
             elif method == 'MM_plus_plus_feat_top3':
-                # Top-3 layers by ER_B (block_10, block_11, norm), linear weights
+                # Top-3 ER_B layers within the selected same-dimension
+                # fusion group, with linear ER_B weights. For heterogeneous
+                # backbones, this becomes top-3 stage concatenation.
                 scores_id, scores_ood = evaluate_MM_plus_plus_feat(
                     train_inter_path=self.inter_train_path,
                     layer_feats_val=self.inter_feats_val,
@@ -445,6 +466,141 @@ class OODScore:
                     train_labels=self.train_labels,
                     path=path,
                     alpha=0.5,
+                )
+            elif method == 'MM_plus_plus_zscore':
+                # MM++ with per-layer z-score normalization before aggregation.
+                # Fixes scale mismatch: each S_l standardized to zero mean / unit var
+                # on the ID val set before the Boltzmann weighted sum.
+                scores_id, scores_ood = evaluate_MM_plus_plus(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    zscore=True,
+                )
+            elif method == 'MM_plus_plus_topk':
+                # MM++ restricted to the top-3 layers by ER_B (most class-discriminative).
+                # Drops noisy early layers entirely before Boltzmann aggregation.
+                scores_id, scores_ood = evaluate_MM_plus_plus(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    top_k=3,
+                )
+            elif method == 'MM_plus_plus_relative':
+                # Per-layer Relative MM++: S_rel_l = S_class_l - S_global_l,
+                # then Boltzmann-weighted sum over ER_B.
+                scores_id, scores_ood = evaluate_MM_plus_plus_relative(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                )
+            elif method == 'MM_plus_plus_relative_zscore':
+                # Per-layer Relative MM++ + z-score normalization.
+                scores_id, scores_ood = evaluate_MM_plus_plus_relative(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    zscore=True,
+                )
+            elif method == 'MM_plus_plus_paper_K1':
+                scores_id, scores_ood = evaluate_MM_plus_plus_paper(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=1,
+                )
+            elif method == 'MM_plus_plus_paper_K2':
+                scores_id, scores_ood = evaluate_MM_plus_plus_paper(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=2,
+                )
+            elif method == 'MM_plus_plus_paper_K3':
+                scores_id, scores_ood = evaluate_MM_plus_plus_paper(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=3,
+                )
+            elif method == 'MM_plus_plus_paper_K2_zscore':
+                scores_id, scores_ood = evaluate_MM_plus_plus_paper(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=2,
+                    zscore=True,
+                )
+            elif method == 'MM_plus_plus_paper_K3_zscore':
+                scores_id, scores_ood = evaluate_MM_plus_plus_paper(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=3,
+                    zscore=True,
+                )
+            elif method == 'MM_plus_plus_logrank_K1':
+                scores_id, scores_ood = evaluate_MM_plus_plus_logrank(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=1,
+                )
+            elif method == 'MM_plus_plus_logrank_K2':
+                scores_id, scores_ood = evaluate_MM_plus_plus_logrank(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=2,
+                )
+            elif method == 'MM_plus_plus_logrank_K3':
+                scores_id, scores_ood = evaluate_MM_plus_plus_logrank(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=3,
+                )
+            elif method == 'MM_plus_plus_xmaha_erb':
+                scores_id, scores_ood = evaluate_MM_plus_plus_xmaha_rank(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    rank_by='erb',
+                )
+            elif method == 'MM_plus_plus_xmaha_var':
+                scores_id, scores_ood = evaluate_MM_plus_plus_xmaha_rank(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    rank_by='var',
                 )
             else:
                 raise NotImplementedError(f'Method {method} not implemented.')
@@ -563,6 +719,20 @@ methods_train_usage = {
     'MM_plus_plus_cat2': True,
     'MM_plus_plus_cat3': True,
     'MM_plus_plus_anchored': True,
+    'MM_plus_plus_zscore': True,
+    'MM_plus_plus_topk': True,
+    'MM_plus_plus_relative': True,
+    'MM_plus_plus_relative_zscore': True,
+    'MM_plus_plus_paper_K1': True,
+    'MM_plus_plus_paper_K2': True,
+    'MM_plus_plus_paper_K3': True,
+    'MM_plus_plus_paper_K2_zscore': True,
+    'MM_plus_plus_paper_K3_zscore': True,
+    'MM_plus_plus_xmaha_erb': True,
+    'MM_plus_plus_xmaha_var': True,
+    'MM_plus_plus_logrank_K1': True,
+    'MM_plus_plus_logrank_K2': True,
+    'MM_plus_plus_logrank_K3': True,
 }
 
 parser = argparse.ArgumentParser(description='OOD Evaluation on NINCO')

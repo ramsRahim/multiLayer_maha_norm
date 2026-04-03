@@ -201,6 +201,8 @@ timm_models = {
     'convnext_base_in22ft1k': {'config': {'model_name': 'convnext_base_in22ft1k', 'pretrained': True}},
     'convnext_base': {'config': {'model_name': 'convnext_base', 'pretrained': True}},
     'convnext_tiny-22k': {'config': {'model_name': 'convnext_tiny_384_in22ft1k', 'pretrained': True}},
+    'convnext_tiny.fb_in1k': {'config': {'model_name': 'convnext_tiny.fb_in1k', 'pretrained': True, 'num_classes': 1000}},
+    'swin_tiny_patch4_window7_224.ms_in1k': {'config': {'model_name': 'swin_tiny_patch4_window7_224.ms_in1k', 'pretrained': True, 'num_classes': 1000}},
     'deit3_base_patch16_224': {'config': {'model_name': 'deit3_base_patch16_224', 'pretrained': True}},
     'deit3_base_patch16_224_in21ft1k': {
         'config': {'model_name': 'deit3_base_patch16_224_in21ft1k', 'pretrained': True}},

@@ -1329,7 +1329,7 @@ def _fit_logreg_weights(X, y, w_init, lr=0.1, n_iter=200):
 
 def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
                           train_labels, path, n_classes=1000,
-                          logreg_val_frac=0.2, logreg_lr=0.1, logreg_n_iter=200):
+                          top_k=None, zscore=False):
     """
     MM++: Multilayer Mahalanobis++ Distance for OOD detection.
 
@@ -1356,9 +1356,9 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
         train_labels:     [N_train] integer class labels
         path:             cache directory for computed statistics / ID scores
         n_classes:        number of ID classes (1000 for ImageNet-1k)
-        logreg_val_frac:  fraction of OOD test data used to train w_l weights
-        logreg_lr:        learning rate for logistic regression gradient descent
-        logreg_n_iter:    number of gradient-descent steps
+        top_k:            if set, only aggregate the top-K layers by ER_B
+        zscore:           if True, z-normalize each layer's scores using ID val
+                          statistics before aggregation (fixes scale mismatch)
 
     Returns:
         score_id:  [N_val] MM++ scores for ID validation data
@@ -1516,10 +1516,23 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
     er   = np.array(effective_ranks)    # [L]  within-class ER  (diagnostic only)
     er_b = np.array(effective_ranks_b)  # [L]  between-class ER (used for weighting)
 
-    # Adaptive temperature: largest adjacent log-gain in ER_B (Eq. 10 adapted)
-    tau = float(np.max(np.log(er_b[1:] / er_b[:-1].clip(min=1e-8))))
+    S_val = np.stack(layer_scores_val)   # [L, N_val]
+    S_ood = np.stack(layer_scores_ood)   # [L, N_ood]
 
-    # Boltzmann with positive sign: higher ER_B → more weight (Eq. 9 adapted)
+    # ── Optional top-K layer selection ───────────────────────────────────────
+    # Discard early layers whose ER_B is too low to carry class-discriminative signal.
+    if top_k is not None and top_k < len(er_b):
+        keep  = np.argsort(er_b)[-top_k:]          # indices of top-K by ER_B
+        er_b  = er_b[keep]
+        er    = er[keep]
+        S_val = S_val[keep]
+        S_ood = S_ood[keep]
+        print(f'[MM++] top_k={top_k}: keeping layers {keep.tolist()}')
+
+    # ── Adaptive temperature: largest adjacent log-gain in ER_B ──────────────
+    tau = float(np.max(np.log(er_b[1:] / er_b[:-1].clip(min=1e-8)))) if len(er_b) > 1 else 1.0
+
+    # Boltzmann with positive sign: higher ER_B → more weight
     log_w = +tau * er_b
     log_w -= log_w.max()   # numerical stability
     w = np.exp(log_w)
@@ -1530,10 +1543,15 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
     print(f'[MM++] Adaptive temperature:   τ = {tau:.4f}')
     print(f'[MM++] Aggregation weights:    {w.round(4)}')
 
-    # Eq. 11: S_total(x) = Σ_l w_l · S_l(x)
-    S_val = np.stack(layer_scores_val)   # [L, N_val]
-    S_ood = np.stack(layer_scores_ood)   # [L, N_ood]
+    # ── Optional z-score normalization per layer (fixes scale mismatch) ──────
+    # Standardize using ID val statistics; apply same shift/scale to OOD.
+    if zscore:
+        mean_l = S_val.mean(axis=1, keepdims=True)          # [L, 1]
+        std_l  = S_val.std(axis=1, keepdims=True).clip(min=1e-8)
+        S_val  = (S_val - mean_l) / std_l
+        S_ood  = (S_ood - mean_l) / std_l
 
+    # S_total(x) = Σ_l w_l · S_l(x)
     score_id  = w @ S_val   # [N_val]
     score_ood = w @ S_ood   # [N_ood]
 
@@ -1549,18 +1567,30 @@ def evaluate_MM_plus_plus_feat(train_inter_path, layer_feats_val, layer_feats_oo
     Combines M++'s L2-normalization (Eq. 4 of MM++ paper) with X-Mahalanobis-style
     feature mixing.  Fusion weights are based on between-class ER (ER_B).
 
+    For homogeneous-width backbones (e.g. ViTs), this function performs additive
+    feature mixing within a selected dimension group.
+
+    For heterogeneous-width backbones (e.g. ResNet stages with 256/512/1024/2048),
+    additive mixing is not well-defined. In that case, this function falls back to
+    concatenation: L2-normalize each selected stage separately, concatenate them,
+    and fit a single Mahalanobis model on the joint feature vector.
+
     Algorithm:
       1. Load cached per-layer class means + ER_B (from evaluate_MM_plus_plus run).
-      2. Compute fusion weights:
-           - boltzmann_temp=None: α_l = ER_B_l / Σ ER_B  (linear, all layers)
-           - boltzmann_temp=τ:    α_l = softmax(τ * ER_B_l)  (Boltzmann, sharpened)
-           - top_k=k:             restrict to k layers with highest ER_B, then apply
-                                  the above weight formula within those k layers
-      3. For each active layer l: load features, L2-normalize, accumulate
+      2. Group layers by feature dimension D.
+      3. Rank layers by ER_B only within each dimension group.
+      4. Select the fusion group as the dimension group whose best layer has the
+         highest ER_B (ties broken in favour of the deeper layer).
+      5. Compute fusion weights only inside the selected group:
+           - boltzmann_temp=None: α_l = ER_B_l / Σ ER_B  (linear, selected group)
+           - boltzmann_temp=τ:    α_l = softmax(τ * ER_B_l)  (Boltzmann, selected group)
+           - top_k=k:             keep the top-k ER_B layers inside the selected
+                                  group before normalising the weights
+      6. For each active layer l: load features, L2-normalize, accumulate
              Φ(x) += α_l * h_l(x)   (one layer at a time, O(N×D) memory)
-      4. Compute fused class means:  μ_c = Σ_l α_l * μ_{c,l}
-      5. Fit Ledoit-Wolf on within-class residuals of fused features.
-      6. Score: S(x) = −min_c (Φ(x) − μ_c)ᵀ Σ⁻¹ (Φ(x) − μ_c)
+      7. Compute fused class means:  μ_c = Σ_l α_l * μ_{c,l}
+      8. Fit Ledoit-Wolf on within-class residuals of fused features.
+      9. Score: S(x) = −min_c (Φ(x) − μ_c)ᵀ Σ⁻¹ (Φ(x) − μ_c)
 
     Pre-requisite: evaluate_MM_plus_plus() must have been run first so that
     per-layer class-mean (.._mean.npy) and ER_B (.._er_b.npy) caches exist.
@@ -1606,30 +1636,75 @@ def evaluate_MM_plus_plus_feat(train_inter_path, layer_feats_val, layer_feats_oo
         er_b_vals.append(float(np.load(er_b_path)))
         mean_list.append(np.load(mean_path).astype(np.float64))  # [C, D]
 
-    er_b_full = np.array(er_b_vals)   # [L]  all layers
+    er_b_full = np.array(er_b_vals, dtype=np.float64)   # [L]  all layers
+    dims_full = np.array([mean.shape[1] for mean in mean_list], dtype=int)
 
-    # ── Apply top_k filter ────────────────────────────────────────────────
-    if top_k is not None and top_k < L:
-        active_idx = np.argsort(er_b_full)[-top_k:]   # indices of top-k ER_B layers
-        active_idx = np.sort(active_idx)               # restore original order
+    # Heterogeneous-width backbones cannot be additively fused without an
+    # explicit learned alignment. Use concatenation instead, defaulting to
+    # the top-2 ER_B layers so early weak stages do not dominate the joint fit.
+    if len(np.unique(dims_full)) > 1:
+        concat_top_k = top_k if top_k is not None else 2
+        if boltzmann_temp is not None:
+            print('[MM++Feat] Heterogeneous feature dims detected; '
+                  f'falling back to concatenation with top_k={concat_top_k}. '
+                  'boltzmann_temp is ignored.')
+        else:
+            print('[MM++Feat] Heterogeneous feature dims detected; '
+                  f'falling back to concatenation with top_k={concat_top_k}.')
+        return evaluate_MM_plus_plus_concat(
+            train_inter_path=train_inter_path,
+            layer_feats_val=layer_feats_val,
+            layer_feats_ood=layer_feats_ood,
+            train_labels=train_labels,
+            path=path,
+            n_classes=n_classes,
+            top_k=concat_top_k,
+        )
+
+    # ── Group layers by feature dimension and rank only within group ──────
+    dim_groups = {}
+    for idx, dim in enumerate(dims_full):
+        dim_groups.setdefault(int(dim), []).append(idx)
+
+    group_infos = []
+    for dim, idxs in sorted(dim_groups.items(), key=lambda item: (item[1][-1], item[0])):
+        idxs_arr = np.array(idxs, dtype=int)
+        order = np.lexsort((idxs_arr, er_b_full[idxs_arr]))[::-1]
+        ranked_idx = idxs_arr[order]
+        ranked_erb = er_b_full[ranked_idx]
+        group_infos.append({
+            'dim': int(dim),
+            'indices': idxs_arr,
+            'ranked_idx': ranked_idx,
+            'ranked_erb': ranked_erb,
+            'best_erb': float(ranked_erb[0]),
+            'best_depth': int(ranked_idx[0]),
+        })
+        print(
+            f"[MM++Feat] Dim group {int(dim)}: "
+            f"layers={[layer_names[i] for i in idxs_arr]} | "
+            f"ER_B={np.round(er_b_full[idxs_arr], 2).tolist()} | "
+            f"ranked={[layer_names[i] for i in ranked_idx]}"
+        )
+
+    # Choose the dimension group whose top ER_B layer is strongest.
+    # This generalises the old "use final-layer dimension" rule without
+    # comparing incompatible dimensions during fusion.
+    selected_group = max(group_infos, key=lambda g: (g['best_erb'], g['best_depth']))
+    ranked_idx = selected_group['ranked_idx']
+    if top_k is not None and top_k < len(ranked_idx):
+        active_idx = np.sort(ranked_idx[:top_k])
     else:
-        active_idx = np.arange(L)
-
-    # ── Filter to layers with the same dimension as the final layer ───────
-    # Feature fusion requires all active layers to share dimension D.
-    # For heterogeneous architectures (ResNets with 256/512/1024/2048),
-    # only keep layers whose D matches the final (highest-ER_B) layer.
-    dims = np.array([mean_list[i].shape[1] for i in active_idx])
-    D_final = mean_list[active_idx[-1]].shape[1]
-    same_dim = dims == D_final
-    if not same_dim.all():
-        dropped = [layer_names[active_idx[j]] for j in range(len(active_idx)) if not same_dim[j]]
-        print(f'[MM++Feat] WARNING: dropping layers with dim != {D_final}: {dropped}')
-        active_idx = active_idx[same_dim]
-        er_b_full_filtered = er_b_full.copy()
-        er_b_full_filtered[~np.isin(np.arange(L), active_idx)] = 0.0
+        active_idx = np.sort(ranked_idx)
 
     er_b_active = er_b_full[active_idx]                # [k]
+    selected_dim = selected_group['dim']
+
+    print(
+        f"[MM++Feat] Selected dim group {selected_dim} "
+        f"(best ER_B={selected_group['best_erb']:.3f} at "
+        f"{layer_names[selected_group['best_depth']]})"
+    )
 
     # ── Compute fusion weights ────────────────────────────────────────────
     if boltzmann_temp is not None:
@@ -1638,16 +1713,22 @@ def evaluate_MM_plus_plus_feat(train_inter_path, layer_feats_val, layer_feats_oo
         alpha  = np.exp(log_w)
         alpha /= alpha.sum()
     else:
-        alpha = er_b_active / er_b_active.sum()        # linear ER_B normalisation
+        erb_sum = er_b_active.sum()
+        if erb_sum <= 0:
+            alpha = np.full(len(er_b_active), 1.0 / len(er_b_active), dtype=np.float64)
+        else:
+            alpha = er_b_active / erb_sum              # linear ER_B normalisation
 
     print(f'[MM++Feat] ER_B (active layers): {er_b_active.round(2)}')
     print(f'[MM++Feat] Active layer names:   {[layer_names[i] for i in active_idx]}')
     print(f'[MM++Feat] Fusion weights (α):   {alpha.round(4)}')
 
-    # ── Cache tag: unique per (boltzmann_temp, top_k) ─────────────────────
+    # ── Cache tag: unique per (selection rule, dim group, boltzmann_temp, top_k)
+    # Bump the prefix so old fused caches from the previous cross-dimension
+    # selection rule are never reused by accident.
     tag_suffix  = f'_tau{boltzmann_temp:.4f}' if boltzmann_temp is not None else '_linear'
     tag_suffix += f'_top{top_k}' if top_k is not None else '_all'
-    fused_tag       = f'mm_pp_feat_erbw{tag_suffix}'
+    fused_tag       = f'mm_pp_feat_dimgroup_v2_dim{selected_dim}{tag_suffix}'
     fused_mean_path = os.path.join(path, f'{fused_tag}_means.npy')
     fused_prec_path = os.path.join(path, f'{fused_tag}_prec.npy')
     id_score_path   = os.path.join(path, f'{fused_tag}_id_scores.npy')
@@ -1704,8 +1785,10 @@ def evaluate_MM_plus_plus_feat(train_inter_path, layer_feats_val, layer_feats_oo
         np.save(fused_prec_path, prec_fused)
 
     # ── Helper: fuse + score a set of per-layer feature arrays ───────────
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     def _fuse_and_score(layer_feats_list):
-        N     = layer_feats_list[0].shape[0]
+        N     = layer_feats_list[active_idx[0]].shape[0]
         fused = np.zeros((N, D), dtype=np.float64)
         for a_pos, l in enumerate(active_idx):
             feats = layer_feats_list[l].astype(np.float64)
@@ -1713,14 +1796,22 @@ def evaluate_MM_plus_plus_feat(train_inter_path, layer_feats_val, layer_feats_oo
             feats /= norms
             fused += alpha[a_pos] * feats
 
-        mean_t = torch.from_numpy(fused_means).cuda().double()   # [C, D]
-        prec_t = torch.from_numpy(prec_fused).cuda().double()    # [D, D]
-        scores = []
-        for f in torch.from_numpy(fused).cuda().double():
-            diff = f - mean_t                           # [C, D]
-            d    = ((diff @ prec_t) * diff).sum(-1)    # [C]
-            scores.append(-d.min().cpu().item())
-        return np.array(scores)
+        mean_t = torch.from_numpy(fused_means).to(device=device, dtype=torch.float64)   # [C, D]
+        prec_t = torch.from_numpy(prec_fused).to(device=device, dtype=torch.float64)    # [D, D]
+        mean_prec_t = mean_t @ prec_t                                                    # [C, D]
+        mean_quad_t = (mean_prec_t * mean_t).sum(dim=1)                                  # [C]
+
+        batch_size = 1024 if device.type == 'cuda' else 256
+        scores = np.empty(N, dtype=np.float64)
+        for start in range(0, N, batch_size):
+            end = min(start + batch_size, N)
+            x_t = torch.from_numpy(fused[start:end]).to(device=device, dtype=torch.float64)
+            x_prec_t = x_t @ prec_t                                                      # [B, D]
+            x_quad_t = (x_prec_t * x_t).sum(dim=1, keepdim=True)                         # [B, 1]
+            cross_t = x_t @ mean_prec_t.T                                                # [B, C]
+            dist_t = x_quad_t - (2.0 * cross_t) + mean_quad_t.unsqueeze(0)               # [B, C]
+            scores[start:end] = (-dist_t.min(dim=1).values).cpu().numpy()
+        return scores
 
     # ── ID val scores (cached) ────────────────────────────────────────────
     if os.path.exists(id_score_path):
@@ -1738,10 +1829,10 @@ def evaluate_MM_plus_plus_feat(train_inter_path, layer_feats_val, layer_feats_oo
 
 
 def evaluate_MM_plus_plus_concat(train_inter_path, layer_feats_val, layer_feats_ood,
-                                 train_labels, path, n_classes=1000, top_k=2):
+                                 train_labels, path, n_classes=1000, top_k=None):
     """
-    MM++ Concatenation: stack L2-normalized features from top-k layers, then
-    compute a single Mahalanobis++ score in the joint D*k dimensional space.
+    MM++ Concatenation: stack L2-normalized features from selected layers, then
+    compute a single Mahalanobis++ score in the joint feature space.
 
     Unlike feature mixing (Σ α_l h_l), concatenation [h_{l1}; h_{l2}; ...]
     preserves all per-layer information and learns the full joint covariance
@@ -1752,7 +1843,9 @@ def evaluate_MM_plus_plus_concat(train_inter_path, layer_feats_val, layer_feats_
     evaluate_MM_plus_plus() to have been run first (mean + ER_B cached).
 
     Args:
-        top_k: number of top-ER_B layers to concatenate (default 2: block_11+norm)
+        top_k:
+            if None, concatenate all layers in their original order;
+            otherwise concatenate the top-k layers by ER_B.
     """
     from sklearn.covariance import LedoitWolf
     import json
@@ -1778,19 +1871,25 @@ def evaluate_MM_plus_plus_concat(train_inter_path, layer_feats_val, layer_feats_
         er_b_vals.append(float(np.load(er_b_path)))
         mean_list.append(np.load(mean_path).astype(np.float64))  # [C, D]
 
-    er_b_full = np.array(er_b_vals)
-    top_k     = min(top_k, L)
-    active_idx = np.sort(np.argsort(er_b_full)[-top_k:])   # top-k by ER_B, in order
-    D         = mean_list[0].shape[1]
-    D_joint   = D * top_k
+    er_b_full = np.array(er_b_vals, dtype=np.float64)
+    if top_k is None or top_k >= L:
+        active_idx = np.arange(L)
+        active_label = 'all'
+    else:
+        top_k = min(top_k, L)
+        active_idx = np.sort(np.argsort(er_b_full)[-top_k:])   # top-k by ER_B, in order
+        active_label = f'top{top_k}'
+    active_dims = [int(mean_list[i].shape[1]) for i in active_idx]
+    D_joint = int(sum(active_dims))
 
-    print(f'[MM++Cat] Concatenating top-{top_k} layers by ER_B: '
+    print(f'[MM++Cat] Concatenating {active_label} layers: '
           f'{[layer_names[i] for i in active_idx]}')
     print(f'[MM++Cat] ER_B of active layers: {er_b_full[active_idx].round(2)}')
+    print(f'[MM++Cat] Active dims: {active_dims}')
     print(f'[MM++Cat] Joint feature dim: {D_joint}')
 
     # ── Cache tag ─────────────────────────────────────────────────────────
-    fused_tag       = f'mm_pp_cat_top{top_k}'
+    fused_tag       = f'mm_pp_cat_{active_label}'
     fused_mean_path = os.path.join(path, f'{fused_tag}_means.npy')
     fused_prec_path = os.path.join(path, f'{fused_tag}_prec.npy')
     id_score_path   = os.path.join(path, f'{fused_tag}_id_scores.npy')
@@ -1837,8 +1936,11 @@ def evaluate_MM_plus_plus_concat(train_inter_path, layer_feats_val, layer_feats_
         np.save(fused_prec_path, prec_joint)
 
     # ── Scoring helper ────────────────────────────────────────────────────
-    mean_t = torch.from_numpy(cat_means).cuda().double()    # [C, D_joint]
-    prec_t = torch.from_numpy(prec_joint).cuda().double()   # [D_joint, D_joint]
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    mean_t = torch.from_numpy(cat_means).to(device=device, dtype=torch.float64)    # [C, D_joint]
+    prec_t = torch.from_numpy(prec_joint).to(device=device, dtype=torch.float64)   # [D_joint, D_joint]
+    mean_prec_t = mean_t @ prec_t                                                   # [C, D_joint]
+    mean_quad_t = (mean_prec_t * mean_t).sum(dim=1)                                 # [C]
 
     def _cat_and_score(layer_feats_list):
         parts = []
@@ -1847,12 +1949,17 @@ def evaluate_MM_plus_plus_concat(train_inter_path, layer_feats_val, layer_feats_
             norms = np.linalg.norm(feats, axis=-1, keepdims=True).clip(min=1e-10)
             parts.append(feats / norms)
         cat = np.concatenate(parts, axis=1)   # [N, D_joint]
-        scores = []
-        for f in torch.from_numpy(cat).cuda().double():
-            diff = f - mean_t                           # [C, D_joint]
-            d    = ((diff @ prec_t) * diff).sum(-1)    # [C]
-            scores.append(-d.min().cpu().item())
-        return np.array(scores)
+        batch_size = 1024 if device.type == 'cuda' else 256
+        scores = np.empty(cat.shape[0], dtype=np.float64)
+        for start in range(0, cat.shape[0], batch_size):
+            end = min(start + batch_size, cat.shape[0])
+            x_t = torch.from_numpy(cat[start:end]).to(device=device, dtype=torch.float64)
+            x_prec_t = x_t @ prec_t                                                     # [B, D_joint]
+            x_quad_t = (x_prec_t * x_t).sum(dim=1, keepdim=True)                        # [B, 1]
+            cross_t = x_t @ mean_prec_t.T                                               # [B, C]
+            dist_t = x_quad_t - (2.0 * cross_t) + mean_quad_t.unsqueeze(0)              # [B, C]
+            scores[start:end] = (-dist_t.min(dim=1).values).cpu().numpy()
+        return scores
 
     # ── ID val scores (cached) ────────────────────────────────────────────
     if os.path.exists(id_score_path):
@@ -1998,5 +2105,697 @@ def evaluate_MM_plus_plus_anchored(train_inter_path, layer_feats_val, layer_feat
 
     # Per-sample floor: S(x) >= S_final(x)  ← guarantees >= single-layer baseline
     score_ood = np.maximum(score_ood, s_final_ood)
+
+    return score_id, score_ood
+
+
+def evaluate_MM_plus_plus_paper(train_inter_path, layer_feats_val, layer_feats_ood,
+                                train_labels, path, n_classes=1000, K=3, zscore=False):
+    """
+    MM++ (paper method): Top-K Information Bottleneck Gating using ER_B.
+
+    Adaptation of Algorithm 1 & 2 using between-class ER (ER_B) instead of
+    within-class ER. ER_B = ER of class-means covariance; it *increases* with
+    depth as class structure sharpens. The log-rank gap formula is flipped to:
+
+        Δ_l = ln(ER_B_l) - ln(ER_B_{l-1})   for l = 2..L
+
+    A larger Δ_l means class structure emerged most sharply at layer l.
+    Top-K layers with the largest Δ_l are selected (hard gate); all others
+    receive zero weight. Weights: w_l = Δ_l / Σ_{j∈K} Δ_j.
+
+    For ViT-B these correspond to the final 2-3 blocks where ER_B spikes.
+    For ResNet50 they align with macro-block transitions.
+
+    Requires evaluate_MM_plus_plus to have been run first to populate
+    {tag}_er_b.npy, {tag}_mean.npy, {tag}_prec.npy, {tag}_id_scores.npy.
+
+    Args:
+        K: number of gated layers (paper uses K=3 for CNNs, K=1-2 for ViTs)
+    """
+    import json
+
+    names_path = os.path.join(train_inter_path, 'layer_names.json')
+    with open(names_path) as f:
+        layer_names = json.load(f)
+
+    L = len(layer_names)
+    assert len(layer_feats_val) == L and len(layer_feats_ood) == L
+
+    # ── Step 1: Load between-class ER_B from cache ───────────────────────────
+    er_b = np.zeros(L)
+    for l, layer_name in enumerate(layer_names):
+        er_b_path = os.path.join(path, f'mm_pp_{layer_name}_er_b.npy')
+        if not os.path.exists(er_b_path):
+            raise FileNotFoundError(
+                f'Between-class ER_B cache missing for layer {layer_name}. '
+                f'Run evaluate_MM_plus_plus first to populate the cache.'
+            )
+        er_b[l] = float(np.load(er_b_path))
+
+    print(f'[MM++Paper] Between-class ER_B: {er_b.round(2)}')
+
+    # ── Steps 2-4: Select top-K layers by absolute ER_B ──────────────────────
+    # Primary criterion: absolute ER_B (highest = most class-discriminative).
+    # Tie-breaking: prefer deeper layers with a 0.2%-per-position depth bonus.
+    # Rationale: the final normalization layer (e.g. ViT's LayerNorm after all
+    # blocks) has nearly identical ER_B to the penultimate block (367.0 vs 367.4)
+    # but dramatically better Mahalanobis performance because LayerNorm makes
+    # the feature distribution more Gaussian — a structural property of any
+    # norm layer that ER_B cannot capture.  The 0.2% bonus is small enough that
+    # it never overrides genuine ER_B differences between non-adjacent layers
+    # (e.g. the block_09→block_10 gap of 204 >> 0.2% × 367 ≈ 0.7 per step).
+    #
+    # Weights: w_l = ER_B_l / Σ_{j∈K} ER_B_j  (proportional to discriminability)
+    K_eff      = min(K, L)
+    depth_bonus = np.arange(L) * (er_b.max() * 0.002)   # 0.2% × max_ER_B per step
+    sort_score  = er_b + depth_bonus
+    rank_idx   = np.argsort(sort_score)[-K_eff:]         # indices of top-K
+    sel_layers = rank_idx                                 # 0-indexed layer positions
+    sel_erb    = er_b[sel_layers]                         # [K_eff]
+
+    print(f'[MM++Paper] K={K_eff} selected layers (0-idx): {sel_layers.tolist()}')
+    print(f'[MM++Paper] Selected names:  {[layer_names[i] for i in sel_layers]}')
+    print(f'[MM++Paper] Selected ER_B:   {sel_erb.round(2)}')
+
+    # ── Weights  w_l = ER_B_l / Σ_{j∈K} ER_B_j ─────────────────────────────
+    weights = sel_erb / sel_erb.sum()
+
+    print(f'[MM++Paper] Aggregation weights: {weights.round(4)}')
+
+    # ── Steps 5-6: Score ONLY the K gated layers (Algorithm 2) ───────────────
+    id_scores  = []
+    ood_scores = []
+
+    for rank, l in enumerate(sel_layers):
+        layer_name   = layer_names[l]
+        tag          = f'mm_pp_{layer_name}'
+        mean_path    = os.path.join(path, f'{tag}_mean.npy')
+        prec_path    = os.path.join(path, f'{tag}_prec.npy')
+        id_score_path = os.path.join(path, f'{tag}_id_scores.npy')
+
+        mean_l = np.load(mean_path)
+        prec_l = np.load(prec_path)
+        mean_t = torch.from_numpy(mean_l).cuda().double()
+        prec_t = torch.from_numpy(prec_l).cuda().double()
+
+        def _score(feats_np, mean_t=mean_t, prec_t=prec_t):
+            feats_np = feats_np.astype(np.float64)
+            norms = np.linalg.norm(feats_np, axis=-1, keepdims=True).clip(min=1e-10)
+            feats_np = feats_np / norms
+            out = []
+            for f in torch.from_numpy(feats_np).cuda().double():
+                diff = f - mean_t                        # [C, D]
+                d    = ((diff @ prec_t) * diff).sum(-1)  # [C]
+                out.append(-d.min().cpu().item())
+            return np.array(out)
+
+        # ID val scores (cached)
+        if os.path.exists(id_score_path):
+            s_val = np.load(id_score_path)
+        else:
+            print(f'[MM++Paper] Computing ID scores for layer {layer_name}...')
+            s_val = _score(layer_feats_val[l])
+
+        # OOD scores (not cached — per Algorithm 2, compute only for K layers)
+        print(f'[MM++Paper] [{rank+1}/{K_eff}] Scoring OOD — layer {layer_name}...')
+        s_ood = _score(layer_feats_ood[l])
+
+        id_scores.append(s_val)
+        ood_scores.append(s_ood)
+
+    S_val = np.stack(id_scores)   # [K_eff, N_val]
+    S_ood = np.stack(ood_scores)  # [K_eff, N_ood]
+
+    if zscore:
+        mean_l = S_val.mean(axis=1, keepdims=True)
+        std_l  = S_val.std(axis=1, keepdims=True).clip(min=1e-8)
+        S_val  = (S_val - mean_l) / std_l
+        S_ood  = (S_ood - mean_l) / std_l
+
+    score_id  = weights @ S_val  # [N_val]
+    score_ood = weights @ S_ood  # [N_ood]
+
+    return score_id, score_ood
+
+
+def evaluate_MM_plus_plus_relative(train_inter_path, layer_feats_val, layer_feats_ood,
+                                   train_labels, path, n_classes=1000,
+                                   top_k=None, zscore=False):
+    """
+    Relative MM++ (RMM++): per-layer Relative Mahalanobis++ aggregated with ER_B weights.
+
+    At each layer l, the score is:
+        S_rel_l(x) = S_class_l(x) - S_global_l(x)
+
+    where:
+        S_class_l(x)  = -min_c (h̃_l - μ_{c,l})^T Λ_l (h̃_l - μ_{c,l})   [class-conditional]
+        S_global_l(x) = -(h̃_l - μ_g_l)^T Λ_g_l (h̃_l - μ_g_l)            [global background]
+        μ_g_l         = global mean of L2-normalized training features at layer l
+        Λ_g_l         = Ledoit-Wolf precision of (train features - μ_g_l)
+
+    The background subtraction removes the global geometry contribution that varies
+    across layers, isolating the class-discriminative signal.  This is the multi-layer
+    extension of Relative_Mahalanobis_norm (which consistently beats M++ at single layer).
+
+    Aggregation uses the same Boltzmann-over-ER_B scheme as evaluate_MM_plus_plus.
+    Optional: top_k layer selection and z-score normalization.
+    """
+    from sklearn.covariance import LedoitWolf
+    import json
+
+    names_path = os.path.join(train_inter_path, 'layer_names.json')
+    with open(names_path) as f:
+        layer_names = json.load(f)
+
+    L = len(layer_names)
+    assert len(layer_feats_val) == L and len(layer_feats_ood) == L
+
+    layer_scores_val  = []
+    layer_scores_ood  = []
+    effective_ranks   = []
+    effective_ranks_b = []
+
+    for l, layer_name in enumerate(layer_names):
+        tag        = f'mm_pp_{layer_name}'
+        mean_path  = os.path.join(path, f'{tag}_mean.npy')
+        prec_path  = os.path.join(path, f'{tag}_prec.npy')
+        er_path    = os.path.join(path, f'{tag}_er.npy')
+        er_b_path  = os.path.join(path, f'{tag}_er_b.npy')
+        # global (background) statistics — new files for relative variant
+        gmean_path = os.path.join(path, f'{tag}_gmean.npy')
+        gprec_path = os.path.join(path, f'{tag}_gprec.npy')
+
+        # ── Load or fit class-conditional statistics (reuse MM++ cache) ──────
+        if os.path.exists(mean_path) and os.path.exists(prec_path) and os.path.exists(er_path):
+            mean_l = np.load(mean_path)
+            prec_l = np.load(prec_path)
+            er_l   = float(np.load(er_path))
+        else:
+            raise FileNotFoundError(
+                f'Class-conditional MM++ cache missing for layer {layer_name}. '
+                f'Run evaluate_MM_plus_plus first to populate the cache.'
+            )
+
+        # ── Load or fit global (background) statistics ────────────────────────
+        if os.path.exists(gmean_path) and os.path.exists(gprec_path):
+            gmean_l = np.load(gmean_path)
+            gprec_l = np.load(gprec_path)
+        else:
+            print(f'[RMM++] Layer {l+1}/{L} ({layer_name}): fitting global statistics...')
+            parts = sorted(
+                [fn for fn in os.listdir(train_inter_path)
+                 if fn.startswith(f'layer_{layer_name}_features_') and fn.endswith('.npy')],
+                key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+            )
+            f_train = np.concatenate(
+                [np.load(os.path.join(train_inter_path, p)) for p in parts], axis=0
+            ).astype(np.float64)
+            norms = np.linalg.norm(f_train, axis=-1, keepdims=True).clip(min=1e-10)
+            f_train /= norms
+
+            gmean_l = f_train.mean(axis=0)
+            centered_g = f_train - gmean_l
+            lw_g = LedoitWolf(assume_centered=True)
+            lw_g.fit(centered_g)
+            gprec_l = lw_g.precision_
+            np.save(gmean_path, gmean_l)
+            np.save(gprec_path, gprec_l)
+            del f_train, centered_g
+
+        # ── Load between-class ER (reuse MM++ cache) ─────────────────────────
+        if os.path.exists(er_b_path):
+            er_b_l = float(np.load(er_b_path))
+        else:
+            raise FileNotFoundError(
+                f'ER_B cache missing for layer {layer_name}. '
+                f'Run evaluate_MM_plus_plus first.'
+            )
+
+        effective_ranks.append(er_l)
+        effective_ranks_b.append(er_b_l)
+
+        # ── GPU tensors ───────────────────────────────────────────────────────
+        mean_t  = torch.from_numpy(mean_l).cuda().double()
+        prec_t  = torch.from_numpy(prec_l).cuda().double()
+        gmean_t = torch.from_numpy(gmean_l).cuda().double()
+        gprec_t = torch.from_numpy(gprec_l).cuda().double()
+
+        def _rel_scores(feats_np):
+            feats_np = feats_np.astype(np.float64)
+            norms = np.linalg.norm(feats_np, axis=-1, keepdims=True).clip(min=1e-10)
+            feats_np = feats_np / norms
+            scores = []
+            for f in torch.from_numpy(feats_np).cuda().double():
+                # class-conditional score
+                diff_c = f - mean_t                           # [C, D]
+                s_cls  = -((diff_c @ prec_t) * diff_c).sum(-1).min().item()
+                # global background score
+                diff_g = f - gmean_t                          # [D]
+                s_glb  = -(((diff_g @ gprec_t) * diff_g).sum()).item()
+                scores.append(s_cls - s_glb)
+            return np.array(scores)
+
+        # ── ID val scores (cached per layer) ─────────────────────────────────
+        id_score_path = os.path.join(path, f'{tag}_rel_id_scores.npy')
+        if os.path.exists(id_score_path):
+            s_val_l = np.load(id_score_path)
+        else:
+            print(f'[RMM++] Layer {l+1}/{L} ({layer_name}): computing ID relative scores...')
+            s_val_l = _rel_scores(layer_feats_val[l])
+            np.save(id_score_path, s_val_l)
+
+        print(f'[RMM++] Layer {l+1}/{L} ({layer_name}): computing OOD relative scores...')
+        s_ood_l = _rel_scores(layer_feats_ood[l])
+
+        layer_scores_val.append(s_val_l)
+        layer_scores_ood.append(s_ood_l)
+
+    # ── Aggregation (same as MM++) ────────────────────────────────────────────
+    er   = np.array(effective_ranks)
+    er_b = np.array(effective_ranks_b)
+
+    S_val = np.stack(layer_scores_val)   # [L, N_val]
+    S_ood = np.stack(layer_scores_ood)   # [L, N_ood]
+
+    if top_k is not None and top_k < len(er_b):
+        keep  = np.argsort(er_b)[-top_k:]
+        er_b  = er_b[keep]
+        er    = er[keep]
+        S_val = S_val[keep]
+        S_ood = S_ood[keep]
+        print(f'[RMM++] top_k={top_k}: keeping layers {keep.tolist()}')
+
+    tau = float(np.max(np.log(er_b[1:] / er_b[:-1].clip(min=1e-8)))) if len(er_b) > 1 else 1.0
+    log_w = +tau * er_b
+    log_w -= log_w.max()
+    w = np.exp(log_w)
+    w /= w.sum()
+
+    print(f'[RMM++] Within-class ER:        {er.round(2)}')
+    print(f'[RMM++] Between-class ER (ER_B):{er_b.round(2)}')
+    print(f'[RMM++] Adaptive temperature:   τ = {tau:.4f}')
+    print(f'[RMM++] Aggregation weights:    {w.round(4)}')
+
+    if zscore:
+        mean_l = S_val.mean(axis=1, keepdims=True)
+        std_l  = S_val.std(axis=1, keepdims=True).clip(min=1e-8)
+        S_val  = (S_val - mean_l) / std_l
+        S_ood  = (S_ood - mean_l) / std_l
+
+    score_id  = w @ S_val
+    score_ood = w @ S_ood
+
+    return score_id, score_ood
+
+
+def evaluate_MM_plus_plus_xmaha_rank(train_inter_path, layer_feats_val, layer_feats_ood,
+                                      train_labels, path, n_classes=1000, rank_by='erb'):
+    """
+    X-Maha style feature blending with rank-based fusion weights.
+
+    Instead of raw ER_B values (which can produce extreme weight distributions),
+    weights are proportional to the rank of each layer's criterion value:
+        α_l = rank_l / Σ_{j=1}^{L} j  =  rank_l / (L*(L+1)/2)
+    where rank_l ∈ {1, …, L} with L=highest criterion.
+
+    Two ranking criteria are supported:
+        rank_by='erb': rank by cached between-class ER_B (higher ER_B → higher rank)
+        rank_by='var': rank by total variance Tr(f^T f / N) of raw (pre-L2-norm)
+                       training features at each layer
+
+    For homogeneous-width backbones (e.g. ViT, all layers same dim):
+      1. Compute rank-based α_l for each layer.
+      2. Blend: Φ(x) = Σ α_l · L2_norm(x^l)   (additive, same dim)
+      3. Fit class means + Ledoit-Wolf precision on Φ(train).
+      4. Score: S(x) = −min_c (Φ(x) − μ_c)ᵀ Σ⁻¹ (Φ(x) − μ_c)
+
+    For heterogeneous-width backbones (e.g. ResNet, Swin, ConvNeXt):
+      Additive fusion is not defined across different dims.  Instead, fall back to
+      rank-weighted concatenation using the top-K layers by ER_B (default K=2):
+      1. Select top-K layers by ER_B; compute rank weights α within that set.
+      2. Scale each layer's L2-normalized features by α_l.
+      3. Concatenate: Φ(x) = [α_1·h_1(x); α_2·h_2(x); …; α_K·h_K(x)]
+      4. Fit class means + Ledoit-Wolf on Φ(train).
+      5. Score: S(x) = −min_c (Φ(x) − μ_c)ᵀ Σ⁻¹ (Φ(x) − μ_c)
+
+    Pre-requisite: evaluate_MM_plus_plus() must have been run first (ER_B + mean cached).
+
+    Args:
+        train_inter_path: directory of per-layer training feature shards
+        layer_feats_val:  list of L arrays [N_val, D_l]
+        layer_feats_ood:  list of L arrays [N_ood, D_l]
+        train_labels:     [N_train] integer class labels
+        path:             cache directory (same as used by evaluate_MM_plus_plus)
+        n_classes:        number of ID classes
+        rank_by:          'erb' or 'var' — criterion for ranking layers
+
+    Returns:
+        score_id:  [N_val]  higher = more ID-like
+        score_ood: [N_ood]  higher = more ID-like
+    """
+    from sklearn.covariance import LedoitWolf
+    import json
+
+    assert rank_by in ('erb', 'var'), f"rank_by must be 'erb' or 'var', got '{rank_by}'"
+
+    names_path = os.path.join(train_inter_path, 'layer_names.json')
+    if not os.path.exists(names_path):
+        raise FileNotFoundError(
+            f'layer_names.json not found in {train_inter_path}. '
+            f'Run extract_intermediate_features() first.'
+        )
+    with open(names_path) as f:
+        layer_names = json.load(f)
+    L = len(layer_names)
+
+    # ── Pass 1: load criterion values per layer ────────────────────────────
+    er_b_vals  = []
+    mean_list  = []   # [L]  each entry: [C, D]
+    for l, layer_name in enumerate(layer_names):
+        tag       = f'mm_pp_{layer_name}'
+        er_b_path = os.path.join(path, f'{tag}_er_b.npy')
+        mean_path = os.path.join(path, f'{tag}_mean.npy')
+        if not os.path.exists(er_b_path) or not os.path.exists(mean_path):
+            raise FileNotFoundError(
+                f'Cached stats for layer {layer_name} not found in {path}. '
+                f'Run MM_plus_plus first to populate the cache.'
+            )
+        er_b_vals.append(float(np.load(er_b_path)))
+        mean_list.append(np.load(mean_path).astype(np.float64))  # [C, D]
+
+    er_b_full = np.array(er_b_vals)   # [L]
+    dims      = np.array([mean_list[i].shape[1] for i in range(L)])
+    is_homogeneous = len(np.unique(dims)) == 1
+
+    # ── Helper: fast CPU Mahalanobis scoring ──────────────────────────────
+    def _fast_maha(feats, means, prec):
+        """feats:[N,D], means:[C,D], prec:[D,D] -> [N] scores"""
+        Pmu    = means @ prec
+        mu_Pmu = np.sum(means * Pmu, axis=1)
+        xP     = feats @ prec
+        xPx    = np.sum(feats * xP, axis=1)
+        return -np.min(xPx[:, None] - 2 * (xP @ means.T) + mu_Pmu[None, :], axis=1)
+
+    if is_homogeneous:
+        # ── Homogeneous path: additive rank-weighted fusion ────────────────
+        active_idx = np.arange(L)
+        K = L
+
+        if rank_by == 'erb':
+            criterion = er_b_full
+            print(f'[XMahaRank] Homogeneous dims ({dims[0]}). rank_by=erb, ER_B: {criterion.round(2)}')
+        else:
+            criterion = np.zeros(K)
+            for a_pos, layer_name in enumerate(layer_names):
+                parts = sorted(
+                    [fn for fn in os.listdir(train_inter_path)
+                     if fn.startswith(f'layer_{layer_name}_features_') and fn.endswith('.npy')],
+                    key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+                )
+                if not parts:
+                    raise FileNotFoundError(f'No training features for {layer_name} in {train_inter_path}')
+                f_l = np.concatenate(
+                    [np.load(os.path.join(train_inter_path, p)) for p in parts], axis=0
+                ).astype(np.float64)
+                criterion[a_pos] = np.sum(f_l ** 2) / f_l.shape[0]
+                del f_l
+            print(f'[XMahaRank] Homogeneous dims ({dims[0]}). rank_by=var, Tr(F^TF)/N: {criterion.round(2)}')
+
+        order = np.argsort(criterion)
+        ranks = np.empty(K, dtype=float)
+        ranks[order] = np.arange(1, K + 1)
+        alpha = ranks / ranks.sum()
+
+        print(f'[XMahaRank] Active layers:  {layer_names}')
+        print(f'[XMahaRank] Ranks:          {ranks.astype(int).tolist()}')
+        print(f'[XMahaRank] Fusion weights: {alpha.round(4)}')
+
+        fused_tag       = f'mm_pp_xmaha_rank_{rank_by}'
+        fused_mean_path = os.path.join(path, f'{fused_tag}_means.npy')
+        fused_prec_path = os.path.join(path, f'{fused_tag}_prec.npy')
+        id_score_path   = os.path.join(path, f'{fused_tag}_id_scores.npy')
+        D = int(dims[0])
+
+        if os.path.exists(fused_mean_path) and os.path.exists(fused_prec_path):
+            print('[XMahaRank] Loading cached fused class means + precision...')
+            fused_means = np.load(fused_mean_path)
+            prec_fused  = np.load(fused_prec_path)
+        else:
+            N_train     = len(train_labels)
+            fused_train = np.zeros((N_train, D), dtype=np.float64)
+            fused_means = np.zeros((n_classes, D), dtype=np.float64)
+            for a_pos, layer_name in enumerate(layer_names):
+                print(f'[XMahaRank] Layer {a_pos+1}/{L} ({layer_name}): fusing train features...')
+                parts = sorted(
+                    [fn for fn in os.listdir(train_inter_path)
+                     if fn.startswith(f'layer_{layer_name}_features_') and fn.endswith('.npy')],
+                    key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+                )
+                if not parts:
+                    raise FileNotFoundError(f'No training features for {layer_name} in {train_inter_path}')
+                f_l = np.concatenate(
+                    [np.load(os.path.join(train_inter_path, p)) for p in parts], axis=0
+                ).astype(np.float64)
+                norms = np.linalg.norm(f_l, axis=-1, keepdims=True).clip(min=1e-10)
+                f_l /= norms
+                fused_train += alpha[a_pos] * f_l
+                fused_means += alpha[a_pos] * mean_list[a_pos]
+                del f_l
+
+            print('[XMahaRank] Centering + fitting Ledoit-Wolf...')
+            lw = LedoitWolf(assume_centered=True)
+            lw.fit(fused_train - fused_means[train_labels])
+            prec_fused = lw.precision_
+            del fused_train
+            np.save(fused_mean_path, fused_means)
+            np.save(fused_prec_path, prec_fused)
+
+        def _fuse_and_score(layer_feats_list):
+            N     = layer_feats_list[0].shape[0]
+            fused = np.zeros((N, D), dtype=np.float64)
+            for a_pos in range(L):
+                feats = layer_feats_list[a_pos].astype(np.float64)
+                norms = np.linalg.norm(feats, axis=-1, keepdims=True).clip(min=1e-10)
+                fused += alpha[a_pos] * (feats / norms)
+            return _fast_maha(fused, fused_means, prec_fused)
+
+    else:
+        # ── Heterogeneous path: rank-weighted concatenation ────────────────
+        # Select top-2 layers by ER_B; rank weights within that set.
+        het_top_k  = 2
+        active_idx = np.sort(np.argsort(er_b_full)[-het_top_k:])
+        K          = len(active_idx)
+        criterion  = er_b_full[active_idx]
+
+        order = np.argsort(criterion)
+        ranks = np.empty(K, dtype=float)
+        ranks[order] = np.arange(1, K + 1)
+        alpha = ranks / ranks.sum()
+
+        active_names = [layer_names[i] for i in active_idx]
+        active_dims  = [int(dims[i]) for i in active_idx]
+        D = int(sum(active_dims))
+
+        print(f'[XMahaRank] Heterogeneous dims {dims.tolist()} — rank-weighted concat fallback.')
+        print(f'[XMahaRank] Top-{het_top_k} layers by ER_B: {active_names}, ER_B: {criterion.round(2)}')
+        print(f'[XMahaRank] Rank weights: {alpha.round(4)}, joint dim: {D}')
+
+        fused_tag       = f'mm_pp_xmaha_rank_{rank_by}_cat{het_top_k}'
+        fused_mean_path = os.path.join(path, f'{fused_tag}_means.npy')
+        fused_prec_path = os.path.join(path, f'{fused_tag}_prec.npy')
+        id_score_path   = os.path.join(path, f'{fused_tag}_id_scores.npy')
+
+        if os.path.exists(fused_mean_path) and os.path.exists(fused_prec_path):
+            print('[XMahaRank] Loading cached concat class means + precision...')
+            fused_means = np.load(fused_mean_path)
+            prec_fused  = np.load(fused_prec_path)
+        else:
+            N_train     = len(train_labels)
+            cat_train   = np.zeros((N_train, D), dtype=np.float64)
+            fused_means = np.zeros((n_classes, D), dtype=np.float64)
+            col = 0
+            for a_pos, l in enumerate(active_idx):
+                layer_name = layer_names[l]
+                d_l        = active_dims[a_pos]
+                print(f'[XMahaRank] Loading train features for {layer_name} (dim={d_l})...')
+                parts = sorted(
+                    [fn for fn in os.listdir(train_inter_path)
+                     if fn.startswith(f'layer_{layer_name}_features_') and fn.endswith('.npy')],
+                    key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+                )
+                if not parts:
+                    raise FileNotFoundError(f'No training features for {layer_name} in {train_inter_path}')
+                f_l = np.concatenate(
+                    [np.load(os.path.join(train_inter_path, p)) for p in parts], axis=0
+                ).astype(np.float64)
+                norms = np.linalg.norm(f_l, axis=-1, keepdims=True).clip(min=1e-10)
+                f_l /= norms
+                cat_train[:, col:col+d_l]   = alpha[a_pos] * f_l
+                fused_means[:, col:col+d_l] = alpha[a_pos] * mean_list[l]
+                col += d_l
+                del f_l
+
+            print('[XMahaRank] Centering + fitting Ledoit-Wolf on concatenated features...')
+            lw = LedoitWolf(assume_centered=True)
+            lw.fit(cat_train - fused_means[train_labels])
+            prec_fused = lw.precision_
+            del cat_train
+            np.save(fused_mean_path, fused_means)
+            np.save(fused_prec_path, prec_fused)
+
+        def _fuse_and_score(layer_feats_list):
+            N   = layer_feats_list[active_idx[0]].shape[0]
+            cat = np.zeros((N, D), dtype=np.float64)
+            col = 0
+            for a_pos, l in enumerate(active_idx):
+                d_l   = active_dims[a_pos]
+                feats = layer_feats_list[l].astype(np.float64)
+                norms = np.linalg.norm(feats, axis=-1, keepdims=True).clip(min=1e-10)
+                cat[:, col:col+d_l] = alpha[a_pos] * (feats / norms)
+                col += d_l
+            return _fast_maha(cat, fused_means, prec_fused)
+
+    # ── ID val scores (cached) ─────────────────────────────────────────────
+    if os.path.exists(id_score_path):
+        score_id = np.load(id_score_path)
+    else:
+        print('[XMahaRank] Computing ID val scores...')
+        score_id = _fuse_and_score(layer_feats_val)
+        np.save(id_score_path, score_id)
+
+    # ── OOD scores ─────────────────────────────────────────────────────────
+    print('[XMahaRank] Computing OOD scores...')
+    score_ood = _fuse_and_score(layer_feats_ood)
+
+    return score_id, score_ood
+
+
+def evaluate_MM_plus_plus_logrank(train_inter_path, layer_feats_val, layer_feats_ood,
+                                   train_labels, path, n_classes=1000, K=2):
+    """
+    MM++ paper: Top-K Information Gating via discrete log-rank gap (Algorithm 1 & 2).
+
+    Layer selection criterion (Eq. 9):
+        Δ_l = ln(ER_{l-1}/D_{l-1}) - ln(ER_l/D_l)   for l ∈ {2..L}
+    where ER_l is the within-class effective rank (Shannon entropy of the tied
+    covariance eigenspectrum) and D_l is the feature dimension at layer l.
+
+    A large Δ_l means the relative intrinsic dimensionality drops sharply at layer l
+    — i.e., strong semantic compression / neural collapse.
+
+    Aggregation weights (Eq. 10):
+        w_l = Δ_l / Σ_{j∈K} Δ_j   for l ∈ K,   0 otherwise
+
+    Final OOD score (Eq. 11):
+        S_total(x) = Σ_{l∈K} w_l · S_l(x)
+
+    Pre-requisite: evaluate_MM_plus_plus() must have been run first to cache
+    per-layer ER (mm_pp_{name}_er.npy), means, precision, and ID scores.
+
+    Args:
+        train_inter_path: directory of per-layer training feature shards
+        layer_feats_val:  list of L arrays [N_val, D_l]
+        layer_feats_ood:  list of L arrays [N_ood, D_l]
+        train_labels:     [N_train] integer class labels (not used — all stats cached)
+        path:             cache directory used by evaluate_MM_plus_plus
+        n_classes:        number of ID classes
+        K:                number of layers to gate (paper uses K=2 for ViT, K=3 for CNN)
+
+    Returns:
+        score_id:  [N_val]  higher = more ID-like
+        score_ood: [N_ood]  higher = more ID-like
+    """
+    import json
+
+    names_path = os.path.join(train_inter_path, 'layer_names.json')
+    if not os.path.exists(names_path):
+        raise FileNotFoundError(f'layer_names.json not found in {train_inter_path}.')
+    with open(names_path) as f:
+        layer_names = json.load(f)
+    L = len(layer_names)
+
+    # ── Load cached within-class ER and dimension per layer ───────────────
+    er_vals = []
+    D_vals  = []
+    for layer_name in layer_names:
+        tag       = f'mm_pp_{layer_name}'
+        er_path   = os.path.join(path, f'{tag}_er.npy')
+        mean_path = os.path.join(path, f'{tag}_mean.npy')
+        if not os.path.exists(er_path) or not os.path.exists(mean_path):
+            raise FileNotFoundError(
+                f'Cached stats for layer {layer_name} not found in {path}. '
+                f'Run MM_plus_plus first.'
+            )
+        er_vals.append(float(np.load(er_path)))
+        D_vals.append(int(np.load(mean_path).shape[1]))   # [C, D] → D
+
+    er = np.array(er_vals, dtype=np.float64)   # [L]
+    D  = np.array(D_vals,  dtype=np.float64)   # [L]
+
+    # ── Relative rank and log-rank gaps (Eq. 9) ───────────────────────────
+    rel_rank = er / D                              # [L]  ER_l / D_l
+    log_rel  = np.log(rel_rank.clip(min=1e-10))   # [L]
+    # delta[i] = Δ_{i+2}  (gap from layer i to layer i+1, 0-indexed)
+    delta = log_rel[:-1] - log_rel[1:]             # [L-1], all should be >= 0 near collapse
+
+    # ── Top-K selection ───────────────────────────────────────────────────
+    K_eff = min(K, L - 1)
+    top_pos = np.argsort(delta)[-K_eff:]          # positions in delta (0-indexed)
+    top_idx = top_pos + 1                          # actual layer indices (layer producing Δ)
+
+    sel_delta = delta[top_pos]
+    denom     = sel_delta.sum()
+    if denom <= 0:
+        weights = np.ones(K_eff) / K_eff
+    else:
+        weights = sel_delta / denom
+
+    print(f'[MM++LogRank] Relative rank (ER/D):  {rel_rank.round(6)}')
+    print(f'[MM++LogRank] Log-rank gaps Δ:       {np.round(delta, 4)}')
+    print(f'[MM++LogRank] Selected layer idx:    {sorted(top_idx.tolist())}')
+    print(f'[MM++LogRank] Selected layers:       {[layer_names[i] for i in sorted(top_idx)]}')
+    print(f'[MM++LogRank] Selected Δ values:     {sel_delta.round(4)}')
+    print(f'[MM++LogRank] Aggregation weights:   {weights.round(4)}')
+
+    # ── Load cached ID scores; compute OOD scores ─────────────────────────
+    id_scores  = []
+    ood_scores = []
+    for pos, l in zip(top_pos, top_idx):
+        layer_name    = layer_names[l]
+        tag           = f'mm_pp_{layer_name}'
+        id_score_path = os.path.join(path, f'{tag}_id_scores.npy')
+        mean_path     = os.path.join(path, f'{tag}_mean.npy')
+        prec_path     = os.path.join(path, f'{tag}_prec.npy')
+
+        if not os.path.exists(id_score_path):
+            raise FileNotFoundError(
+                f'Cached ID scores for {layer_name} not found. Run MM_plus_plus first.'
+            )
+        id_scores.append(np.load(id_score_path))
+
+        # OOD scores (computed online, not cached)
+        mean_l = np.load(mean_path)
+        prec_l = np.load(prec_path)
+        mean_t = torch.from_numpy(mean_l).cuda().double()
+        prec_t = torch.from_numpy(prec_l).cuda().double()
+
+        feats = layer_feats_ood[l].astype(np.float64)
+        norms = np.linalg.norm(feats, axis=-1, keepdims=True).clip(min=1e-10)
+        feats /= norms
+
+        s_ood = []
+        print(f'[MM++LogRank] Scoring OOD for layer {layer_name}...')
+        for f in torch.from_numpy(feats).cuda().double():
+            diff = f - mean_t
+            d    = ((diff @ prec_t) * diff).sum(-1)
+            s_ood.append(-d.min().cpu().item())
+        ood_scores.append(np.array(s_ood))
+
+    S_val = np.stack(id_scores)    # [K_eff, N_val]
+    S_ood = np.stack(ood_scores)   # [K_eff, N_ood]
+
+    score_id  = weights @ S_val
+    score_ood = weights @ S_ood
 
     return score_id, score_ood
