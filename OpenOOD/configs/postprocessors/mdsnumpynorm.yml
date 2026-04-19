@@ -1,3 +1,0 @@
-postprocessor:
-  name: mdsnumpynorm
-  APS_mode: False
