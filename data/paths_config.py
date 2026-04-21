@@ -1,19 +1,12 @@
 import os
-ninco_folder = '/home/rahim/exp/Data/NINCO/NINCO'
-repo_path = '/home/rahim/exp/multiLayer_maha_norm'
+ninco_folder = '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm/NINCO/NINCO'
+repo_path = '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm'
 
 dset_location_dict = {
     'NINCO': ninco_folder,
-    'ImageNet-O': '/home/rahim/exp/Data/imagenet-o',
+    'ImageNet-O': '/data/home/mislambhuian/data/imagenet-o',
+    'ImageNet1K': '/data/home/mislambhuian/data/imagenet-1k',
 }
-
-root_folder_0 = '/home/rahim/exp/Data'
-dset_location_suffix_dict_0 = {
-    'ImageNet1K': 'imagenet',
-}
-
-additional_dset_location_dict_0 = {k: os.path.join(root_folder_0, v) for k,v in dset_location_suffix_dict_0.items()}
-dset_location_dict.update(additional_dset_location_dict_0)
 
 dataset_csvs = {
     'NINCO_OOD_classes': 'data/NINCO_OOD_classes.csv',
