@@ -3,7 +3,5 @@ model_weights/
 *__pycache__*
 data/__pycache__
 /logs/
-/scripts/
 /NINCO/
 /OpenOOD/
-/data/paths_config.py

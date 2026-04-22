@@ -2,6 +2,7 @@ import os
 import csv
 import argparse
 import datetime
+import traceback
 import timm
 import torchvision.datasets as dset
 from scipy.special import softmax
@@ -274,169 +275,175 @@ class OODScore:
 
         methods_results = {}
         for method in methods:
-            if method == 'MSP':
-                scores_id, scores_ood = evaluate_MSP(self.softmax_id_val, self.softmax_ood)
-            elif method == 'Energy':
-                scores_id, scores_ood = evaluate_Energy(self.logits_id_val, self.logits_ood)
-            elif method == 'Energy+React':
-                scores_id, scores_ood = evaluate_Energy_React(
-                    self.feature_id_train, self.feature_id_val, self.feature_ood, w, b, path)
-            elif method == 'ODIN':
-                scores_id, scores_ood = evaluate_ODIN(
-                    model, self.dataset_in_val, self.dataset_out, path,
-                    T=1000, epsilon=0.0014, batch_size=model.batch_size)
-            elif method == 'Mahalanobis':
-                scores_id, scores_ood = evaluate_Mahalanobis(
-                    self.feature_id_train, self.feature_id_val, self.feature_ood,
-                    self.train_labels, path)
-            elif method == 'Mahalanobis_norm':
-                scores_id, scores_ood = evaluate_Mahalanobis_norm(
-                    self.feature_id_train, self.feature_id_val, self.feature_ood,
-                    self.train_labels, path)
-            elif method == 'Relative_Mahalanobis':
-                scores_id, scores_ood = evaluate_Relative_Mahalanobis(
-                    self.feature_id_train, self.feature_id_val, self.feature_ood,
-                    self.train_labels, path)
-            elif method == 'Relative_Mahalanobis_norm':
-                scores_id, scores_ood = evaluate_Relative_Mahalanobis_norm(
-                    self.feature_id_train, self.feature_id_val, self.feature_ood,
-                    self.train_labels, path)
-            elif method == 'knn':
-                scores_id, scores_ood = evaluate_KNN(
-                    self.feature_id_train, self.feature_id_val, self.feature_ood, path)
-            elif method == 'MM_plus_plus':
-                scores_id, scores_ood = evaluate_MM_plus_plus(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                )
-            elif method == 'MM_plus_plus_topk':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=2,
-                )
-            elif method == 'MM_plus_plus_topk_cat':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=2,
-                    concat=True,
-                )
-            elif method == 'MM_plus_plus_topk_cat_k3':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=3,
-                    concat=True,
-                )
-            elif method == 'MM_plus_plus_topk_k3':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=3,
-                )
-            elif method == 'MM_plus_plus_topk_rel':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=2,
-                    use_erb=False,
-                    relative=True,
-                )
-            elif method == 'MM_plus_plus_topk_erb':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=2,
-                    use_erb=True,
-                )
-            elif method == 'MM_plus_plus_zscore':
-                scores_id, scores_ood = evaluate_MM_plus_plus(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    zscore=True,
-                )
-            elif method == 'MM_plus_plus_topk2_zscore':
-                scores_id, scores_ood = evaluate_MM_plus_plus(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    top_k=2,
-                    zscore=True,
-                )
-            elif method == 'MM_plus_plus_topk_erb_rel':
-                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
-                    train_inter_path=self.inter_train_path,
-                    layer_feats_val=self.inter_feats_val,
-                    layer_feats_ood=self.inter_feats_ood,
-                    train_labels=self.train_labels,
-                    path=path,
-                    K=2,
-                    use_erb=True,
-                    relative=True,
-                )
-            else:
-                raise NotImplementedError(f'Method {method} not implemented.')
-            
-            print('s-id finite:',np.isfinite(scores_id).all())
-            print('s-ood finite:',np.isfinite(scores_ood).all())
-            methods_results[method] = {'scores_id': scores_id,
-                                       'scores_ood': scores_ood}
+            try:
+                if method == 'MSP':
+                    scores_id, scores_ood = evaluate_MSP(self.softmax_id_val, self.softmax_ood)
+                elif method == 'Energy':
+                    scores_id, scores_ood = evaluate_Energy(self.logits_id_val, self.logits_ood)
+                elif method == 'Energy+React':
+                    scores_id, scores_ood = evaluate_Energy_React(
+                        self.feature_id_train, self.feature_id_val, self.feature_ood, w, b, path)
+                elif method == 'ODIN':
+                    scores_id, scores_ood = evaluate_ODIN(
+                        model, self.dataset_in_val, self.dataset_out, path,
+                        T=1000, epsilon=0.0014, batch_size=model.batch_size)
+                elif method == 'Mahalanobis':
+                    scores_id, scores_ood = evaluate_Mahalanobis(
+                        self.feature_id_train, self.feature_id_val, self.feature_ood,
+                        self.train_labels, path)
+                elif method == 'Mahalanobis_norm':
+                    scores_id, scores_ood = evaluate_Mahalanobis_norm(
+                        self.feature_id_train, self.feature_id_val, self.feature_ood,
+                        self.train_labels, path)
+                elif method == 'Relative_Mahalanobis':
+                    scores_id, scores_ood = evaluate_Relative_Mahalanobis(
+                        self.feature_id_train, self.feature_id_val, self.feature_ood,
+                        self.train_labels, path)
+                elif method == 'Relative_Mahalanobis_norm':
+                    scores_id, scores_ood = evaluate_Relative_Mahalanobis_norm(
+                        self.feature_id_train, self.feature_id_val, self.feature_ood,
+                        self.train_labels, path)
+                elif method == 'knn':
+                    scores_id, scores_ood = evaluate_KNN(
+                        self.feature_id_train, self.feature_id_val, self.feature_ood, path)
+                elif method == 'MM_plus_plus':
+                    scores_id, scores_ood = evaluate_MM_plus_plus(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                    )
+                elif method == 'MM_plus_plus_topk':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=2,
+                    )
+                elif method == 'MM_plus_plus_topk_cat':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=2,
+                        concat=True,
+                    )
+                elif method == 'MM_plus_plus_topk_cat_k3':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=3,
+                        concat=True,
+                    )
+                elif method == 'MM_plus_plus_topk_k3':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=3,
+                    )
+                elif method == 'MM_plus_plus_topk_rel':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=2,
+                        use_erb=False,
+                        relative=True,
+                    )
+                elif method == 'MM_plus_plus_topk_erb':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=2,
+                        use_erb=True,
+                    )
+                elif method == 'MM_plus_plus_zscore':
+                    scores_id, scores_ood = evaluate_MM_plus_plus(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        zscore=True,
+                    )
+                elif method == 'MM_plus_plus_topk2_zscore':
+                    scores_id, scores_ood = evaluate_MM_plus_plus(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        top_k=2,
+                        zscore=True,
+                    )
+                elif method == 'MM_plus_plus_topk_erb_rel':
+                    scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                        train_inter_path=self.inter_train_path,
+                        layer_feats_val=self.inter_feats_val,
+                        layer_feats_ood=self.inter_feats_ood,
+                        train_labels=self.train_labels,
+                        path=path,
+                        K=2,
+                        use_erb=True,
+                        relative=True,
+                    )
+                else:
+                    raise NotImplementedError(f'Method {method} not implemented.')
 
-            for c in OOD_classes:
-                class_indices = np.where(self.labels_ood == self.dataset_out.class_to_idx[c])
-                scores_on_ood_class = scores_ood[class_indices]
-                methods_results[method][c] = {'auroc': auroc_ood(scores_id, scores_on_ood_class),
-                                              'fpr_at_95': fpr_at_tpr(scores_id, scores_on_ood_class, 0.95)}
-            methods_results[method]['samples_mean_auroc'] = auroc_ood(scores_id, scores_ood)
-            methods_results[method]['samples_mean_fpr_at_95'] = fpr_at_tpr(scores_id, scores_ood, 0.95)
-            methods_results[method]['ood_classes_mean_auroc'] = np.mean(
-                np.array([methods_results[method][c]['auroc'] for c in OOD_classes]))
-            methods_results[method]['ood_classes_mean_fpr_at_95'] = np.mean(
-                np.array([methods_results[method][c]['fpr_at_95'] for c in OOD_classes]))
+                print('s-id finite:',np.isfinite(scores_id).all())
+                print('s-ood finite:',np.isfinite(scores_ood).all())
+                methods_results[method] = {'scores_id': scores_id,
+                                           'scores_ood': scores_ood}
 
-            auroc_pt  = methods_results[method]['ood_classes_mean_auroc']
-            fpr_pt    = methods_results[method]['ood_classes_mean_fpr_at_95']
-            ci = bootstrap_ci(scores_id, scores_ood,
-                              seeds=tuple(range(n_bootstrap_seeds)), n_bootstrap=1000)
-            methods_results[method]['bootstrap_ci'] = ci
-            print(
-                '{} on {} evaluated with {}.\n'
-                'Auroc: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
-                'fpr at 95: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
-                'accuracy val: {}\n accuracy train: {}'.format(
-                    method, self.dataset, model.model_name,
-                    auroc_pt,  ci['auroc_ci'][0], ci['auroc_ci'][1],
-                    fpr_pt,    ci['fpr_ci'][0],   ci['fpr_ci'][1],
-                    self.val_acc, self.train_acc,
+                for c in OOD_classes:
+                    class_indices = np.where(self.labels_ood == self.dataset_out.class_to_idx[c])
+                    scores_on_ood_class = scores_ood[class_indices]
+                    methods_results[method][c] = {'auroc': auroc_ood(scores_id, scores_on_ood_class),
+                                                  'fpr_at_95': fpr_at_tpr(scores_id, scores_on_ood_class, 0.95)}
+                methods_results[method]['samples_mean_auroc'] = auroc_ood(scores_id, scores_ood)
+                methods_results[method]['samples_mean_fpr_at_95'] = fpr_at_tpr(scores_id, scores_ood, 0.95)
+                methods_results[method]['ood_classes_mean_auroc'] = np.mean(
+                    np.array([methods_results[method][c]['auroc'] for c in OOD_classes]))
+                methods_results[method]['ood_classes_mean_fpr_at_95'] = np.mean(
+                    np.array([methods_results[method][c]['fpr_at_95'] for c in OOD_classes]))
+
+                auroc_pt  = methods_results[method]['ood_classes_mean_auroc']
+                fpr_pt    = methods_results[method]['ood_classes_mean_fpr_at_95']
+                ci = bootstrap_ci(scores_id, scores_ood,
+                                  seeds=tuple(range(n_bootstrap_seeds)), n_bootstrap=1000)
+                methods_results[method]['bootstrap_ci'] = ci
+                print(
+                    '{} on {} evaluated with {}.\n'
+                    'Auroc: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
+                    'fpr at 95: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
+                    'accuracy val: {}\n accuracy train: {}'.format(
+                        method, self.dataset, model.model_name,
+                        auroc_pt,  ci['auroc_ci'][0], ci['auroc_ci'][1],
+                        fpr_pt,    ci['fpr_ci'][0],   ci['fpr_ci'][1],
+                        self.val_acc, self.train_acc,
+                    )
                 )
-            )
+            except Exception as e:
+                print(f'[ERROR] Method {method} failed on {model.model_name} / {self.dataset}: {e}')
+                traceback.print_exc()
+                methods_results.pop(method, None)
+                continue
         # save results
         savepath = os.path.join(self.path_to_cache, 'scores', model.model_name, self.dataset_out.__name__)
         if not os.path.exists(savepath):
