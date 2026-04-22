@@ -598,10 +598,16 @@ def get_layer_config(model, model_name):
     elif 'swin' in name:
         stage_list = model.layers if hasattr(model, 'layers') else model.stages
         for i, stage in enumerate(stage_list):
-            layers.append((f'stage_{i}', stage, 'mean_seq'))
+            for j, block in enumerate(stage.blocks):
+                layers.append((f'stage_{i}_block_{j:02d}', block, 'mean_seq'))
+        if hasattr(model, 'norm'):
+            layers.append(('norm', model.norm, 'mean_seq'))
     elif 'convnext' in name:
         for i, stage in enumerate(model.stages):
-            layers.append((f'stage_{i}', stage, 'mean_spatial'))
+            for j, block in enumerate(stage.blocks):
+                layers.append((f'stage_{i}_block_{j:02d}', block, 'mean_spatial'))
+        if hasattr(model, 'head') and hasattr(model.head, 'norm'):
+            layers.append(('norm', model.head.norm, 'mean_spatial'))
     elif any(x in name for x in ['resnet', 'resnext', 'resnetv2']):
         for attr in ['layer1', 'layer2', 'layer3', 'layer4']:
             if hasattr(model, attr):
