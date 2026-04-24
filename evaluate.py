@@ -2,6 +2,7 @@ import os
 import csv
 import argparse
 import datetime
+import json
 import traceback
 import timm
 import torchvision.datasets as dset
@@ -27,6 +28,7 @@ class OODScore:
                  path_to_cache='model_outputs/cache'):
         self.path_to_cache = path_to_cache
         self.path_to_imagenet = path_to_imagenet
+        self.id_dataset_name = self._resolve_id_dataset_name(path_to_imagenet)
         self.clip_quantile = 0.99
         # self.methods = [
         #     'MSP', 'Energy', 'Energy+React', 'ODIN',
@@ -48,6 +50,90 @@ class OODScore:
         self.clip_transform = None
         self.val_acc = -99
         self.train_acc = -99
+
+    @staticmethod
+    def _resolve_id_dataset_name(path_to_imagenet):
+        normalized_path = os.path.abspath(os.path.normpath(path_to_imagenet))
+        for dataset_name, dataset_path in data.paths_config.dset_location_dict.items():
+            if os.path.abspath(os.path.normpath(dataset_path)) == normalized_path:
+                return dataset_name
+        return os.path.basename(normalized_path) or normalized_path
+
+    @property
+    def metrics_json_path(self):
+        return os.path.join(self.path_to_cache, 'scores', 'metrics.json')
+
+    def _load_metrics_index(self):
+        if not os.path.exists(self.metrics_json_path):
+            return {}
+        try:
+            with open(self.metrics_json_path, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f'[Warning] Could not decode metrics JSON: {self.metrics_json_path}')
+            return {}
+
+    def _write_metrics_index(self, metrics_index):
+        os.makedirs(os.path.dirname(self.metrics_json_path), exist_ok=True)
+        tmp_path = f'{self.metrics_json_path}.{os.getpid()}.tmp'
+        with open(tmp_path, 'w') as f:
+            json.dump(metrics_index, f, indent=2, sort_keys=True)
+        os.replace(tmp_path, self.metrics_json_path)
+
+    def _metrics_entry(self, metrics_index, model_name, method):
+        return (
+            metrics_index
+            .get(self.id_dataset_name, {})
+            .get(self.dataset_out.__name__, {})
+            .get(model_name, {})
+            .get(method)
+        )
+
+    @staticmethod
+    def _metrics_entry_complete(entry):
+        return entry is not None and entry.get('auroc') is not None and entry.get('fpr_at_95') is not None
+
+    def pending_methods(self, model_name, methods):
+        metrics_index = self._load_metrics_index()
+        pending = []
+        for method in methods:
+            entry = self._metrics_entry(metrics_index, model_name, method)
+            if self._metrics_entry_complete(entry):
+                print(
+                    f'[Skip] {method} already evaluated for '
+                    f'id={self.id_dataset_name}, ood={self.dataset_out.__name__}, model={model_name}.'
+                )
+            else:
+                pending.append(method)
+        return pending
+
+    def _store_method_metrics(self, model, method, method_results, bootstrap_ci):
+        metrics_index = self._load_metrics_index()
+        id_metrics = metrics_index.setdefault(self.id_dataset_name, {})
+        ood_metrics = id_metrics.setdefault(self.dataset_out.__name__, {})
+        model_metrics = ood_metrics.setdefault(model.model_name, {})
+        model_metrics[method] = {
+            'id_dataset': self.id_dataset_name,
+            'id_dataset_path': self.path_to_imagenet,
+            'ood_dataset': self.dataset_out.__name__,
+            'ood_dataset_arg': self.dataset,
+            'model': model.model_name,
+            'method': method,
+            'auroc': float(method_results['ood_classes_mean_auroc']),
+            'fpr_at_95': float(method_results['ood_classes_mean_fpr_at_95']),
+            'samples_mean_auroc': float(method_results['samples_mean_auroc']),
+            'samples_mean_fpr_at_95': float(method_results['samples_mean_fpr_at_95']),
+            'bootstrap_ci': {
+                'auroc_mean': float(bootstrap_ci['auroc_mean']),
+                'auroc_ci': [float(v) for v in bootstrap_ci['auroc_ci']],
+                'fpr_mean': float(bootstrap_ci['fpr_mean']),
+                'fpr_ci': [float(v) for v in bootstrap_ci['fpr_ci']],
+            },
+            'val_acc': float(self.val_acc),
+            'train_acc': float(self.train_acc),
+            'updated_at': datetime.datetime.now().isoformat(timespec='seconds'),
+        }
+        self._write_metrics_index(metrics_index)
 
     def setup(self, dataset, model, ood_dataset_paths_prefix=None, clip_model=False):
         """Load and prepare the data."""
@@ -257,6 +343,14 @@ class OODScore:
 
     def evaluate(self, model, OOD_classes, methods=['MSP'], n_bootstrap_seeds=3):
         # patly adapted from https://github.com/haoqiwang/vim/blob/master/benchmark.py
+        methods = self.pending_methods(model.model_name, methods)
+        if not methods:
+            print(
+                f'No pending methods for id={self.id_dataset_name}, '
+                f'ood={self.dataset_out.__name__}, model={model.model_name}.'
+            )
+            return {}
+
         path = os.path.join(self.path_to_cache, 'cache_methods', model.model_name)
         if not os.path.exists(path):
             os.makedirs(path)
@@ -434,6 +528,7 @@ class OODScore:
                 ci = bootstrap_ci(scores_id, scores_ood,
                                   seeds=tuple(range(n_bootstrap_seeds)), n_bootstrap=1000)
                 methods_results[method]['bootstrap_ci'] = ci
+                self._store_method_metrics(model, method, methods_results[method], ci)
                 print(
                     '{} on {} evaluated with {}.\n'
                     'Auroc: {:.4f}  95% CI [{:.4f}, {:.4f}]\n'
@@ -538,13 +633,14 @@ def main():
     torch.hub.set_dir(args.path_to_weights)
     task = OODScore(path_to_cache=args.path_to_cache, path_to_imagenet=args.path_to_imagenet)
     methods = task.methods if args.method == 'all' else [args.method]
-    need_train_outputs = any([methods_train_usage[m] for m in methods])  # raises KeyError if a method is not available
     if args.model_name=='all':
         model_names=list(timm_models.keys())
     else:
         model_names = [args.model_name]
     ood_datasets=['./data/ssb_hard.csv', './data/places365.csv', './data/texture.csv', './data/openimages_o.csv', './data/inaturalist.csv'] if args.dataset=='openood-datasets' else [args.dataset]
     ood_datasets=['NINCO', 'NINCO_OOD_unit_tests', 'NINCO_popular_datasets_subsamples'] if args.dataset=='ninco-datasets' else ood_datasets
+    for method in methods:
+        _ = methods_train_usage[method]  # raises KeyError if a method is not available
     for ood_dataset_name in ood_datasets:
         current_dataset=ood_dataset_name
         for model_name in model_names:
@@ -556,13 +652,21 @@ def main():
                 print('Created model {}.'.format(model.model_name))
                 task.setup(current_dataset, model, ood_dataset_paths_prefix=args.dataset_paths_prefix, clip_model=False)
                 print('Task is set up.')
+                pending_methods = task.pending_methods(model.model_name, methods)
+                if not pending_methods:
+                    print(
+                        f'All requested methods already evaluated for '
+                        f'id={task.id_dataset_name}, ood={task.dataset_out.__name__}, model={model.model_name}.'
+                    )
+                    continue
+                need_train_outputs = any([methods_train_usage[m] for m in pending_methods])
                 task.get_features_and_logits(model, ood=True, train=need_train_outputs,
                                             overwrite=args.overwrite_model_outputs)
-                if any(m.startswith('MM_plus_plus') for m in methods):
+                if any(m.startswith('MM_plus_plus') for m in pending_methods):
                     task.get_intermediate_features(model, ood=True, train=True,
                                                    overwrite=args.overwrite_model_outputs)
                 OOD_classes = task.dataset_out.classes
-                task.evaluate(model, OOD_classes=OOD_classes, methods=methods,
+                task.evaluate(model, OOD_classes=OOD_classes, methods=pending_methods,
                               n_bootstrap_seeds=args.n_bootstrap_seeds)
                 print(f'# ood classes: {len(OOD_classes)}')
             elif model_name=='rn50supcon':
@@ -579,14 +683,22 @@ def main():
                 print('Created model {}.'.format(model.model_name))
                 task.setup(current_dataset, model, ood_dataset_paths_prefix=args.dataset_paths_prefix, clip_model=False)
                 print('Task is set up.')
+                pending_methods = task.pending_methods(model.model_name, methods)
+                if not pending_methods:
+                    print(
+                        f'All requested methods already evaluated for '
+                        f'id={task.id_dataset_name}, ood={task.dataset_out.__name__}, model={model.model_name}.'
+                    )
+                    continue
+                need_train_outputs = any([methods_train_usage[m] for m in pending_methods])
                 task.get_features_and_logits(model, ood=True, train=need_train_outputs,
                                             overwrite=args.overwrite_model_outputs)
-                if any(m.startswith('MM_plus_plus') for m in methods):
+                if any(m.startswith('MM_plus_plus') for m in pending_methods):
                     task.get_intermediate_features(model, ood=True, train=True,
                                                    overwrite=args.overwrite_model_outputs)
                 #if current_dataset.endswith('.csv'):
                 OOD_classes = task.dataset_out.classes
-                task.evaluate(model, OOD_classes=OOD_classes, methods=methods,
+                task.evaluate(model, OOD_classes=OOD_classes, methods=pending_methods,
                               n_bootstrap_seeds=args.n_bootstrap_seeds)
                 print(f'# ood classes: {len(OOD_classes)}')
             else:

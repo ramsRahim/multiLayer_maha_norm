@@ -2,10 +2,10 @@
 #SBATCH --job-name=ninco-all-methods
 #SBATCH --output=logs/exps-v3/%x-%j.out
 #SBATCH --error=logs/exps-v3/%x-%j.err
-#SBATCH --partition=gpucompute-t4
+#SBATCH --partition=gpucompute-p100
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=24
-#SBATCH --mem=96G
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=64G
 #SBATCH --time=3-00:00:00
 
 set -euo pipefail
