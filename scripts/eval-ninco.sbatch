@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=ninco-all-methods
-#SBATCH --output=logs/exps-v2/%x-%j.out
-#SBATCH --error=logs/exps-v2/%x-%j.err
-#SBATCH --partition=gpucompute-a40
+#SBATCH --output=logs/exps-v3/%x-%j.out
+#SBATCH --error=logs/exps-v3/%x-%j.err
+#SBATCH --partition=gpucompute-t4
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=128G
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=96G
 #SBATCH --time=3-00:00:00
 
 set -euo pipefail
@@ -22,7 +22,7 @@ else
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 fi
-LOG_DIR="${REPO_ROOT}/logs/exps-v2"
+LOG_DIR="${REPO_ROOT}/logs/exps-v3"
 
 mkdir -p "${LOG_DIR}"
 
@@ -32,8 +32,11 @@ conda activate NINCO_maha
 cd "${REPO_ROOT}"
 
 MODEL_NAMES=(
-    "vit_base_patch16_clip_224.laion2b_ft_in12k_in1k"
+   "vit_tiny_patch16_224.augreg_in21k_ft_in1k"
+   "vit_small_patch16_224.augreg_in21k_ft_in1k"
+   "vit_small_patch16_224.augreg_in1k"
 )
+
 
 if [ "${#MODEL_NAMES[@]}" -eq 0 ]; then
     echo "No models selected for evaluation."

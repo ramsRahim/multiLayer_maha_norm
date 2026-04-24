@@ -4,9 +4,17 @@ repo_path = '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm'
 
 dset_location_dict = {
     'NINCO': ninco_folder,
-    'ImageNet-O': '/data/home/mislambhuian/data/imagenet-o',
+    'ImageNet-O': '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm/OpenOOD/data/images_largescale/imagenet-o',
     'ImageNet1K': '/data/home/mislambhuian/data/imagenet-1k',
 }
+
+# root_folder_0 = '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm/OpenOOD/data/images_largescale'
+# dset_location_suffix_dict_0 = {
+#     'ImageNet1K': 'imagenet_1k',
+# }
+
+# additional_dset_location_dict_0 = {k: os.path.join(root_folder_0, v) for k,v in dset_location_suffix_dict_0.items()}
+# dset_location_dict.update(additional_dset_location_dict_0)
 
 dataset_csvs = {
     'NINCO_OOD_classes': 'data/NINCO_OOD_classes.csv',
