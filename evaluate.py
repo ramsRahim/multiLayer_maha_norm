@@ -28,16 +28,22 @@ class OODScore:
         self.path_to_cache = path_to_cache
         self.path_to_imagenet = path_to_imagenet
         self.clip_quantile = 0.99
+        # self.methods = [
+        #     'MSP', 'Energy', 'Energy+React', 'ODIN',
+        #     'Mahalanobis', 'Mahalanobis_norm',
+        #     'Relative_Mahalanobis', 'Relative_Mahalanobis_norm',
+        #     'knn', 'MM_plus_plus', 'MM_plus_plus_topk',
+        #     'MM_plus_plus_topk_k3',
+        #     'MM_plus_plus_topk_cat', 'MM_plus_plus_topk_cat_k3',
+        #     'MM_plus_plus_topk_rel',
+        #     'MM_plus_plus_topk_erb', 'MM_plus_plus_topk_erb_rel',
+        #     'MM_plus_plus_zscore', 'MM_plus_plus_topk2_zscore',
+        # ]
         self.methods = [
             'MSP', 'Energy', 'Energy+React', 'ODIN',
             'Mahalanobis', 'Mahalanobis_norm',
             'Relative_Mahalanobis', 'Relative_Mahalanobis_norm',
-            'knn', 'MM_plus_plus', 'MM_plus_plus_topk',
-            'MM_plus_plus_topk_k3',
-            'MM_plus_plus_topk_cat', 'MM_plus_plus_topk_cat_k3',
-            'MM_plus_plus_topk_rel',
-            'MM_plus_plus_topk_erb', 'MM_plus_plus_topk_erb_rel',
-            'MM_plus_plus_zscore', 'MM_plus_plus_topk2_zscore',
+            'knn', 'MM_plus_plus', 'MM_plus_plus_topk_cat',
         ]
         self.clip_transform = None
         self.val_acc = -99

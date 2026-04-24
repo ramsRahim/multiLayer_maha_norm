@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=place365-all-methods
+#SBATCH --job-name=imageneto-all-methods
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
 #SBATCH --partition=gpucompute-a40
@@ -18,8 +18,8 @@ else
 fi
 SCRIPT_DIR="${REPO_ROOT}/scripts"
 
-DATASET="${1:-./data/places365.csv}"
-DATASET_PREFIX="${2:-${REPO_ROOT}/OpenOOD/data}"
+DATASET="${1:-./data/imagenet_o.csv}"
+DATASET_PREFIX="${2:-${REPO_ROOT}/OpenOOD/data/images_largescale}"
 BATCH_SIZE="${3:-128}"
 OVERWRITE="${4:-no}"
 BOOTSTRAP_SEEDS="${5:-3}"
@@ -41,10 +41,11 @@ if [ "${#MODEL_NAMES[@]}" -eq 0 ]; then
     exit 1
 fi
 
-echo "Running all-models all-methods evaluation on places365"
+echo "Running all-models all-methods evaluation on imagenet_o"
 echo "  num_models: ${#MODEL_NAMES[@]}"
 echo "  dataset: ${DATASET}"
 echo "  dataset_prefix: ${DATASET_PREFIX}"
+echo "  data_dir: ${DATASET_PREFIX}/imagenet-o"
 echo "  batch_size: ${BATCH_SIZE}"
 echo "  overwrite: ${OVERWRITE}"
 echo "  bootstrap_seeds: ${BOOTSTRAP_SEEDS}"

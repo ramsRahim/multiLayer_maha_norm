@@ -71,6 +71,7 @@ timm_models = {
 'deit3_base_patch16_384.fb_in1k': {'config': {'model_name': 'deit3_base_patch16_384.fb_in1k', 'pretrained': True, 'num_classes': 1000}},
 'deit3_small_patch16_384.fb_in22k_ft_in1k': {'config': {'model_name': 'deit3_small_patch16_384.fb_in22k_ft_in1k', 'pretrained': True, 'num_classes': 1000}},
 'deit3_small_patch16_384.fb_in1k': {'config': {'model_name': 'deit3_small_patch16_384.fb_in1k', 'pretrained': True, 'num_classes': 1000}},
+'deit3_base_patch16_224.in21ft1k': {'config': {'model_name': 'deit3_base_patch16_224.in21ft1k', 'pretrained': True, 'num_classes': 1000}},
     'tf_efficientnetv2_l.in21k_ft_in1k':{'config': {'model_name': 'tf_efficientnetv2_l.in21k_ft_in1k',
    'pretrained': True,'num_classes':1000}},
     'tf_efficientnetv2_l.in1k':{'config': {'model_name': 'tf_efficientnetv2_l.in1k',
@@ -750,6 +751,5 @@ def load_intermediate_features(savepath, n_expected):
         layer_feats.append(feats.astype(np.float64))
 
     return layer_feats
-
 
 

@@ -10,18 +10,20 @@
 
 set -euo pipefail
 
-DATASET="${1:-NINCO}"
-BATCH_SIZE="${2:-128}"
-OVERWRITE="${3:-no}"
-BOOTSTRAP_SEEDS="${4:-3}"
-EXTRA_ARGS=("${@:5}")
-
 if [ -n "${SLURM_SUBMIT_DIR:-}" ]; then
     REPO_ROOT="${SLURM_SUBMIT_DIR}"
 else
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 fi
+SCRIPT_DIR="${REPO_ROOT}/scripts"
+
+DATASET="${1:-NINCO}"
+BATCH_SIZE="${2:-128}"
+OVERWRITE="${3:-no}"
+BOOTSTRAP_SEEDS="${4:-3}"
+EXTRA_ARGS=("${@:5}")
+
 LOG_DIR="${REPO_ROOT}/logs/exps-v3"
 
 mkdir -p "${LOG_DIR}"
@@ -31,12 +33,7 @@ conda activate NINCO_maha
 
 cd "${REPO_ROOT}"
 
-MODEL_NAMES=(
-   "vit_tiny_patch16_224.augreg_in21k_ft_in1k"
-   "vit_small_patch16_224.augreg_in21k_ft_in1k"
-   "vit_small_patch16_224.augreg_in1k"
-)
-
+source "${SCRIPT_DIR}/all_model_names.sh"
 
 if [ "${#MODEL_NAMES[@]}" -eq 0 ]; then
     echo "No models selected for evaluation."
