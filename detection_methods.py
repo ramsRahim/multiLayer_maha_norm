@@ -240,7 +240,8 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
 
 def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_feats_ood,
                                        train_labels, path, n_classes=1000, K=2, cache_suffix='',
-                                       use_erb=False, relative=False, concat=False):
+                                       use_erb=False, use_erb_comp=False, relative=False,
+                                       concat=False, no_anchor=False, use_pinv=False):
     """
     MM++ Top-K Information Gating (NeurIPS 2026 paper, Algorithm 1 & 2).
 
@@ -273,6 +274,18 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
     where within-class distributions collapse (which lags by one layer on ViT).
     ────────────────────────────────────────────────────────────────────────────
 
+    ── Complementarity variant (use_erb_comp=True) ──────────────────────────────
+    Selects K-1 additional layers by the ER_B complementarity score:
+
+        C(i) = ER_B[i] * (1 - ER_B[i] / ER_B[final])
+
+    A layer scores high when it is (a) discriminative (high ER_B) and
+    (b) genuinely different from the final layer (ER_B[i] << ER_B[final]).
+    Layers that are too similar to the final representation (e.g., block_11
+    whose ER_B ≈ ER_B[norm]) score near zero and are skipped.
+    Weighting: softmax(ER_B) over selected layers.
+    ────────────────────────────────────────────────────────────────────────────
+
     ── Relative variant (relative=True) ────────────────────────────────────────
     Subtracts a global (non-class-conditional) Mahalanobis score from the fused
     feature representation, mirroring Relative_Mahalanobis_norm. Removes global
@@ -298,6 +311,8 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
         n_classes:        number of ID classes
         K:                total number of layers to select (paper: K=2 for ViT, K=3 for CNN)
         use_erb:          if True, select/weight by between-class ER_B instead of H/D gaps
+        use_erb_comp:     if True, select K-1 extra layers by ER_B complementarity score
+                          C(i)=ER_B[i]*(1-ER_B[i]/ER_B[final]); weights=softmax(ER_B)
         relative:         if True, subtract global Mahalanobis from fused-space scores
 
     Returns:
@@ -365,63 +380,86 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
         print(f'[TopKGating] Selected layers:          {[layer_names[i] for i in sel_idx]}')
         print(f'[TopKGating] Selected ER_B values:     {sel_er_b.round(4)}')
         print(f'[TopKGating] Softmax weights:          {weights.round(4)}')
+    elif use_erb_comp:
+        # ── ER_B complementarity criterion ────────────────────────────────────
+        # C(i) = ER_B[i] * (1 - ER_B[i] / ER_B[final])
+        # Balances between-class discriminability with diversity from the final layer.
+        er_b_all = np.array(
+            [float(np.load(os.path.join(path, f'mm_pp_{ln}_er_b.npy')))
+             for ln in layer_names],
+            dtype=np.float64
+        )
+        final_idx  = L - 1
+        er_b_final = er_b_all[final_idx]
+        C_scores   = er_b_all * (1.0 - er_b_all / max(er_b_final, 1e-10))
+
+        print(f'[TopKGating] ER_B (all layers):        {er_b_all.round(2)}')
+        print(f'[TopKGating] Complementarity C scores: {C_scores.round(2)}')
+
+        # ── Layer selection ───────────────────────────────────────────────────
+        if no_anchor:
+            k_pick  = min(K, L)
+            sel_idx = np.sort(np.argsort(C_scores)[-k_pick:])
+        else:
+            # Always include final layer; select K-1 others by highest C score.
+            K_extra             = max(0, K - 1)
+            C_no_final          = C_scores.copy()
+            C_no_final[final_idx] = -np.inf
+            if K_extra == 0:
+                extra_layer_idx = np.array([], dtype=int)
+            else:
+                k_pick          = min(K_extra, L - 1)
+                extra_layer_idx = np.sort(np.argsort(C_no_final)[-k_pick:])
+            sel_idx = np.sort(np.unique(np.concatenate([[final_idx], extra_layer_idx])))
+
+        # Equal weights — both layers selected for complementarity, neither should dominate.
+        # (softmax over raw ER_B collapses to [0,1] when scales differ by 3x+)
+        weights = np.ones(len(sel_idx), dtype=np.float64) / len(sel_idx)
+
+        print(f'[TopKGating] Selected layer indices:   {sel_idx.tolist()}')
+        print(f'[TopKGating] Selected layers:          {[layer_names[i] for i in sel_idx]}')
+        print(f'[TopKGating] C scores (selected):      {C_scores[sel_idx].round(4)}')
+        print(f'[TopKGating] Weights (equal):          {weights.round(4)}')
     else:
         # ── Compute within-class entropy H_l from precision eigenvalues ───────
-        # Covariance eigenvalues = 1 / precision eigenvalues
-        # H_l = -sum_i  lambda_bar_i * ln(lambda_bar_i)
         H_vals = []
         for prec_l in prec_list:
-            eig_prec = np.linalg.eigvalsh(prec_l)          # sorted ascending, all > 0
-            eig_cov  = 1.0 / eig_prec.clip(min=1e-10)      # covariance eigenvalues
-            eig_cov  = eig_cov.clip(min=0)
-            total    = eig_cov.sum()
-            if total <= 0:
-                H_vals.append(0.0)
-                continue
-            lam_bar  = eig_cov / total
-            lam_bar  = lam_bar.clip(min=1e-300)             # avoid log(0)
+            eig_prec = np.linalg.eigvalsh(prec_l)
+            eig_cov  = 1.0 / eig_prec.clip(min=1e-10)
+            eig_cov  = eig_cov.clip(min=1e-8)           # paper: clip at ε=1e-8 before normalizing
+            lam_bar  = eig_cov / eig_cov.sum()
             H_l      = -float(np.sum(lam_bar * np.log(lam_bar)))
             H_vals.append(H_l)
 
-        H = np.array(H_vals, dtype=np.float64)              # [L]
+        H = np.array(H_vals, dtype=np.float64)
 
-        # ── Log-rank gaps Delta_l (Eq. 9 of paper) ───────────────────────────
-        # rel_rank_l = H_l / D_l
         rel_rank  = H / D_arr.clip(min=1)
-        log_rel   = np.log(rel_rank.clip(min=1e-300))       # [L]
-        # Delta[i] corresponds to Δ_{i+2} (0-indexed): gap from layer i → layer i+1
-        delta     = log_rel[:-1] - log_rel[1:]              # [L-1], >= 0 near collapse
+        delta     = rel_rank[:-1] - rel_rank[1:]        # paper: simple H/D difference
 
         print(f'[TopKGating] Within-class entropy H:   {H.round(4)}')
         print(f'[TopKGating] H/D (rel rank):           {rel_rank.round(6)}')
         print(f'[TopKGating] Log-rank gaps Delta:      {np.round(delta, 4)}')
 
-        # ── Layer selection ───────────────────────────────────────────────────
-        # Always include final layer (index L-1).
-        # Select K-1 additional by largest Delta value.
-        # delta[i] is the gap arriving at layer i+1 → selecting delta[i] means selecting layer i+1.
-        final_idx   = L - 1
-        K_extra     = max(0, K - 1)
-        # Candidate positions in delta: all except those pointing to final_idx already
-        # (delta[final_idx-1] is the gap arriving at final_idx; we exclude it from extra picks
-        #  since we already include the final layer)
-        candidates  = np.array([i for i in range(len(delta)) if (i + 1) != final_idx])
-        if len(candidates) == 0 or K_extra == 0:
-            extra_layer_idx = np.array([], dtype=int)
+        if no_anchor:
+            k_pick  = min(K, len(delta))
+            top_c   = np.argsort(delta)[-k_pick:]
+            sel_idx = np.sort(top_c + 1)
         else:
-            k_pick = min(K_extra, len(candidates))
-            top_c  = np.argsort(delta[candidates])[-k_pick:]
-            extra_layer_idx = candidates[top_c] + 1   # actual layer indices
+            final_idx   = L - 1
+            K_extra     = max(0, K - 1)
+            candidates  = np.array([i for i in range(len(delta)) if (i + 1) != final_idx])
+            if len(candidates) == 0 or K_extra == 0:
+                extra_layer_idx = np.array([], dtype=int)
+            else:
+                k_pick = min(K_extra, len(candidates))
+                top_c  = np.argsort(delta[candidates])[-k_pick:]
+                extra_layer_idx = candidates[top_c] + 1
+            sel_idx = np.sort(np.unique(np.concatenate([[final_idx], extra_layer_idx])))
 
-        sel_idx = np.sort(np.unique(np.concatenate([[final_idx], extra_layer_idx])))  # ascending
-
-        # Delta used for weighting: delta value that "arrives" at each selected layer
-        # For layer l > 0, the arriving gap is delta[l-1].  For layer 0, use 0 (never selected).
-        sel_deltas = np.array([delta[i - 1] if i > 0 else 0.0 for i in sel_idx], dtype=np.float64)
-        # Softmax weights
-        sel_deltas_shifted = sel_deltas - sel_deltas.max()  # numerical stability
-        exp_d  = np.exp(sel_deltas_shifted)
-        weights = exp_d / exp_d.sum()
+        sel_deltas         = np.array([delta[i - 1] if i > 0 else 0.0 for i in sel_idx], dtype=np.float64)
+        sel_deltas_shifted = sel_deltas - sel_deltas.max()
+        exp_d              = np.exp(sel_deltas_shifted)
+        weights            = exp_d / exp_d.sum()
 
         print(f'[TopKGating] Selected layer indices:   {sel_idx.tolist()}')
         print(f'[TopKGating] Selected layers:          {[layer_names[i] for i in sel_idx]}')
@@ -452,15 +490,16 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
     # For heterogeneous archs (natural concat), also encode whether weights
     # are uniform (concat=True) or Delta-based (concat=False) to avoid
     # sharing a cache across different weight schemes.
-    sel_str   = 'erb' if use_erb else 'delta'
+    sel_str   = 'erb' if use_erb else ('erb_comp' if use_erb_comp else ('delta_na' if no_anchor else 'delta_paper'))
     rel_str   = '_rel' if relative else ''
     wt_str    = '_uw' if concat else ''   # 'uw' = uniform weights
+    prec_str  = '_pinv' if use_pinv else ''
     if is_homogeneous:
-        fused_tag = f'mm_pp_topk{K}_{sel_str}{rel_str}{cache_suffix}'
+        fused_tag = f'mm_pp_topk{K}_{sel_str}{rel_str}{prec_str}{cache_suffix}'
         D_fused   = sel_dims[0]
         print(f'[TopKGating] Homogeneous (dim={D_fused}). Additive fusion.')
     else:
-        fused_tag = f'mm_pp_topk{K}_{sel_str}_cat{wt_str}{rel_str}{cache_suffix}'
+        fused_tag = f'mm_pp_topk{K}_{sel_str}_cat{wt_str}{rel_str}{prec_str}{cache_suffix}'
         D_fused   = sum(sel_dims)
         print(f'[TopKGating] {"Forced " if concat else ""}Concatenation fusion, joint dim={D_fused}.')
 
@@ -527,10 +566,16 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
                 col += d_l
                 del f_l
 
-        print('[TopKGating] Centering + fitting Ledoit-Wolf (class-conditional)...')
-        lw = LedoitWolf(assume_centered=True)
-        lw.fit(fused_train - fused_means[train_labels])
-        prec_fused = lw.precision_
+        centered_train = fused_train - fused_means[train_labels]
+        if use_pinv:
+            print('[TopKGating] Centering + fitting pseudo-inverse precision...')
+            S = centered_train.T @ centered_train / max(len(centered_train) - 1, 1)
+            prec_fused = np.linalg.pinv(S, rcond=1e-10)
+        else:
+            print('[TopKGating] Centering + fitting Ledoit-Wolf (class-conditional)...')
+            lw = LedoitWolf(assume_centered=True)
+            lw.fit(centered_train)
+            prec_fused = lw.precision_
         np.save(fused_mean_path, fused_means)
         np.save(fused_prec_path, prec_fused)
 
