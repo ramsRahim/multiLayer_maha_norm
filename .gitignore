@@ -1,4 +1,6 @@
 cache/
+cache_*/
 model_weights/
 *__pycache__*
 data/__pycache__
+OpenOOD/
