@@ -1,12 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=place365-all-methods
-#SBATCH --output=logs/%x-%j.out
-#SBATCH --error=logs/%x-%j.err
+#SBATCH --output=logs/exps-place365/%x-%j.out
+#SBATCH --error=logs/exps-place365/%x-%j.err
 #SBATCH --partition=gpucompute-a40
+#SBATCH --nodelist=ghpc006
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=128G
-#SBATCH --time=3-00:00:00
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=120G
+#SBATCH --time=5-00:00:00
 
 set -euo pipefail
 
@@ -25,7 +26,7 @@ OVERWRITE="${4:-no}"
 BOOTSTRAP_SEEDS="${5:-3}"
 EXTRA_ARGS=("${@:6}")
 
-LOG_DIR="${REPO_ROOT}/logs"
+LOG_DIR="${REPO_ROOT}/logs/exps-place365"
 
 mkdir -p "${LOG_DIR}"
 

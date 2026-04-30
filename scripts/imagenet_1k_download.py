@@ -5,7 +5,7 @@ from pathlib import Path
 from huggingface_hub import snapshot_download
 
 
-DEFAULT_LOCAL_DIR = "/data/home/mislambhuian/data/imagenet-o"
+DEFAULT_LOCAL_DIR = "/data/home/mislambhuian/data/imagenet-1k"
 
 
 def parse_args():
@@ -19,7 +19,7 @@ def parse_args():
     )
     parser.add_argument(
         "--repo-id",
-        default="cais/imagenet-o",
+        default="ILSVRC/imagenet-1k",
         help="Hugging Face dataset repo to download.",
     )
     parser.add_argument(

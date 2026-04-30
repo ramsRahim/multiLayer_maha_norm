@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=openimage-o-all-methods
-#SBATCH --output=logs/exps-openimage-o/%x-%j.out
-#SBATCH --error=logs/exps-openimage-o/%x-%j.err
+#SBATCH --job-name=textures-all-methods
+#SBATCH --output=logs/exps-textures/%x-%j.out
+#SBATCH --error=logs/exps-textures/%x-%j.err
 #SBATCH --partition=gpucompute-a40
 #SBATCH --nodelist=ghpc006
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=120G
-#SBATCH --time=3-00:00:00
+#SBATCH --time=5-00:00:00
 
 set -euo pipefail
 
@@ -19,14 +19,14 @@ else
 fi
 SCRIPT_DIR="${REPO_ROOT}/scripts"
 
-DATASET="${1:-./data/openimages_o.csv}"
+DATASET="${1:-./data/texture.csv}"
 DATASET_PREFIX="${2:-${REPO_ROOT}/OpenOOD/data}"
 BATCH_SIZE="${3:-128}"
 OVERWRITE="${4:-no}"
 BOOTSTRAP_SEEDS="${5:-3}"
 EXTRA_ARGS=("${@:6}")
 
-LOG_DIR="${REPO_ROOT}/logs/exps-openimage-o"
+LOG_DIR="${REPO_ROOT}/logs/exps-textures"
 
 mkdir -p "${LOG_DIR}"
 
@@ -42,10 +42,11 @@ if [ "${#MODEL_NAMES[@]}" -eq 0 ]; then
     exit 1
 fi
 
-echo "Running all-models all-methods evaluation on openimage_o"
+echo "Running all-models all-methods evaluation on textures"
 echo "  num_models: ${#MODEL_NAMES[@]}"
 echo "  dataset: ${DATASET}"
 echo "  dataset_prefix: ${DATASET_PREFIX}"
+echo "  data_dir: ${DATASET_PREFIX}/images_classic/texture"
 echo "  batch_size: ${BATCH_SIZE}"
 echo "  overwrite: ${OVERWRITE}"
 echo "  bootstrap_seeds: ${BOOTSTRAP_SEEDS}"

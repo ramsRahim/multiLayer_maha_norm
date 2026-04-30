@@ -7,3 +7,6 @@ data/__pycache__
 /NINCO/
 /OpenOOD/
 OpenOOD/
+.codex
+.claude/
+/output/

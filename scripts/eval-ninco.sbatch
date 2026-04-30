@@ -1,12 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=ninco-all-methods
-#SBATCH --output=logs/exps-v3/%x-%j.out
-#SBATCH --error=logs/exps-v3/%x-%j.err
-#SBATCH --partition=gpucompute-p100
+#SBATCH --output=logs/exps-ninco/%x-%j.out
+#SBATCH --error=logs/exps-ninco/%x-%j.err
+#SBATCH --partition=gpucompute-a40
+#SBATCH --nodelist=ghpc005
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=12
-#SBATCH --mem=64G
-#SBATCH --time=3-00:00:00
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=120G
+#SBATCH --time=5-00:00:00
 
 set -euo pipefail
 
@@ -24,7 +25,7 @@ OVERWRITE="${3:-no}"
 BOOTSTRAP_SEEDS="${4:-3}"
 EXTRA_ARGS=("${@:5}")
 
-LOG_DIR="${REPO_ROOT}/logs/exps-v3"
+LOG_DIR="${REPO_ROOT}/logs/exps-ninco"
 
 mkdir -p "${LOG_DIR}"
 
