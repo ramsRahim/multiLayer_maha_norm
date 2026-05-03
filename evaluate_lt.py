@@ -50,7 +50,7 @@ def halve_batch_size(model, label):
 
 
 class OODScore:
-    def __init__(self, path_to_imagenet=data.paths_config.dset_location_dict['ImageNet1K'],
+    def __init__(self, path_to_imagenet=data.paths_config.dset_location_dict['ImageNet-LT'],
                  path_to_cache='model_outputs/cache'):
         self.path_to_cache = path_to_cache
         self.path_to_imagenet = path_to_imagenet
@@ -67,21 +67,11 @@ class OODScore:
         #     'MM_plus_plus_topk_erb', 'MM_plus_plus_topk_erb_rel',
         #     'MM_plus_plus_zscore', 'MM_plus_plus_topk2_zscore',
         # ]
-        # self.methods = [
-        #     'MSP', 'Energy', 'Energy+React', 'ODIN',
-        #     'Mahalanobis', 'Mahalanobis_norm',
-        #     'Relative_Mahalanobis', 'Relative_Mahalanobis_norm',
-        #     'knn', 'MM_plus_plus',
-        #     'MM_plus_plus_topk_cat',
-        #     'MM_plus_plus_topk_noanchor', 'MM_plus_plus_topk_pinv',
-        # ]
         self.methods = [
-            'MSP', 'Energy', 'Energy+React',
+            'MSP', 'Energy', 'Energy+React', 'ODIN',
             'Mahalanobis', 'Mahalanobis_norm',
             'Relative_Mahalanobis', 'Relative_Mahalanobis_norm',
-            'knn', 'MM_plus_plus',
-            'MM_plus_plus_topk_cat',
-            'MM_plus_plus_topk_noanchor', 'MM_plus_plus_topk_pinv',
+            'knn', 'MM_plus_plus', 'MM_plus_plus_topk_cat',
         ]
         self.clip_transform = None
         self.val_acc = -99
@@ -190,7 +180,7 @@ class OODScore:
         }
 
         train_dir = train_dir_override or os.path.join(self.path_to_imagenet, 'train')
-        val_dir = val_dir_override or os.path.join(self.path_to_imagenet, 'val')
+        val_dir = val_dir_override or os.path.join(self.path_to_imagenet, 'test')
         if not os.path.isdir(train_dir):
             raise RuntimeError(
                 f"ImageNet train directory not found at {train_dir}. "
@@ -200,6 +190,14 @@ class OODScore:
             raise RuntimeError(f"ImageNet val directory not found at {val_dir}.")
         self.dataset_in_train = dset.ImageFolder(train_dir, transform=test_transform)
         self.dataset_in_val = dset.ImageFolder(val_dir, transform=test_transform)
+        # ImageNet-LT folders are named by numeric class index ("0", "1", ..., "999"),
+        # but ImageFolder sorts them as strings ("0","1","10","100",...), so its
+        # default labels do not match the model's ImageNet-1k logit order.
+        # Remap labels to int(folder_name) so they align with model outputs.
+        for ds in (self.dataset_in_train, self.dataset_in_val):
+            remap = {i: int(c) for i, c in enumerate(ds.classes)}
+            ds.samples = [(p, remap[t]) for (p, t) in ds.samples]
+            ds.targets = [remap[t] for t in ds.targets]
         if dataset.endswith('.csv'):
             if ood_dataset_paths_prefix == None:
                 self.dataset_out = datasets.ImageCSVDataset(image_table_csv=dataset, transform=test_transform, )
@@ -510,36 +508,6 @@ class OODScore:
                 use_erb=True,
                 relative=True,
             )
-        if method == 'MM_plus_plus_topk_noanchor':
-            return evaluate_MM_plus_plus_topk_gating(
-                train_inter_path=self.inter_train_path,
-                layer_feats_val=self.inter_feats_val,
-                layer_feats_ood=self.inter_feats_ood,
-                train_labels=self.train_labels,
-                path=path,
-                K=2,
-                no_anchor=True,
-            )
-        if method == 'MM_plus_plus_topk_pinv':
-            return evaluate_MM_plus_plus_topk_gating(
-                train_inter_path=self.inter_train_path,
-                layer_feats_val=self.inter_feats_val,
-                layer_feats_ood=self.inter_feats_ood,
-                train_labels=self.train_labels,
-                path=path,
-                K=2,
-                use_pinv=True,
-            )
-        if method == 'MM_plus_plus_topk_erbcomp':
-            return evaluate_MM_plus_plus_topk_gating(
-                train_inter_path=self.inter_train_path,
-                layer_feats_val=self.inter_feats_val,
-                layer_feats_ood=self.inter_feats_ood,
-                train_labels=self.train_labels,
-                path=path,
-                K=2,
-                use_erb_comp=True,
-            )
         raise NotImplementedError(f'Method {method} not implemented.')
 
     def evaluate(self, model, OOD_classes, methods=['MSP'], n_bootstrap_seeds=3):
@@ -704,7 +672,7 @@ parser.add_argument('--dataset', type=str, default='NINCO') #choices=['NINCO', '
 parser.add_argument('--dataset_paths_prefix', type=str) #choices=['NINCO', 'NINCO_OOD_unit_tests', 'NINCO_popular_datasets_subsamples' ...csv],
 parser.add_argument('--overwrite_model_outputs', type=str, choices=['no', 'all', 'notrain', 'ood'], default='no')
 parser.add_argument('--method', default='MM_plus_plus_topk')
-parser.add_argument('--path_to_imagenet', default=data.paths_config.dset_location_dict['ImageNet1K'])
+parser.add_argument('--path_to_imagenet', default=data.paths_config.dset_location_dict['ImageNet-LT'])
 parser.add_argument('--path_to_cache', default='./cache')
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--seed', type=int, default=99)

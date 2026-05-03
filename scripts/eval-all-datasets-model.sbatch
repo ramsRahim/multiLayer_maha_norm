@@ -3,7 +3,7 @@
 #SBATCH --output=logs/exps-all-datasets/%x-%j.out
 #SBATCH --error=logs/exps-all-datasets/%x-%j.err
 #SBATCH --partition=gpucompute-a40
-#SBATCH --nodelist=ghpc005
+#SBATCH --nodelist=ghpc006
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=120G
@@ -19,7 +19,7 @@ else
 fi
 SCRIPT_DIR="${REPO_ROOT}/scripts"
 
-BATCH_SIZE="128"
+BATCH_SIZE="512"
 OVERWRITE="no"
 BOOTSTRAP_SEEDS="3"
 

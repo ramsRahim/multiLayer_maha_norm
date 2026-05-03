@@ -6,6 +6,7 @@ dset_location_dict = {
     'NINCO': ninco_folder,
     'ImageNet-O': '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm/OpenOOD/data/images_largescale/imagenet-o',
     'ImageNet1K': '/data/home/mislambhuian/data/imagenet-1k',
+    'ImageNet-LT': '/data/home/mislambhuian/data/imagenetlt',
 }
 
 # root_folder_0 = '/data/home/mislambhuian/exp/ood_project/multiLayer_maha_norm/OpenOOD/data/images_largescale'

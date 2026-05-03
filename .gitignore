@@ -1,6 +1,7 @@
 cache/
 cache_*/
 model_weights/
+*.pt
 *__pycache__*
 data/__pycache__
 /logs/
@@ -10,3 +11,4 @@ OpenOOD/
 .codex
 .claude/
 /output/
+# /assets/

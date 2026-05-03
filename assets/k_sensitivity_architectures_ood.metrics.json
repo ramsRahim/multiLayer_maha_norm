@@ -1,0 +1,6452 @@
+{
+  "rows": {
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t1": {
+      "K": 1,
+      "auroc": 0.8659775271481048,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790191.907228
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t10": {
+      "K": 10,
+      "auroc": 0.8122806004205037,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790433.5232654
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t11": {
+      "K": 11,
+      "auroc": 0.8118775140516199,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790490.4328496
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t12": {
+      "K": 12,
+      "auroc": 0.8121915361160095,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790551.6390605
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t13": {
+      "K": 13,
+      "auroc": 0.8123130758807307,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790619.2406845
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t14": {
+      "K": 14,
+      "auroc": 0.8121143883425481,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791266.8121092
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t15": {
+      "K": 15,
+      "auroc": 0.8122483127959503,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791992.0586843
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t16": {
+      "K": 16,
+      "auroc": 0.812491631510483,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792821.7875295
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t17": {
+      "K": 17,
+      "auroc": 0.8120128915188509,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793657.8134875
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t18": {
+      "K": 18,
+      "auroc": 0.8116942570741391,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794554.8653092
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t19": {
+      "K": 19,
+      "auroc": 0.8090312749211352,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795451.8810713
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t2": {
+      "K": 2,
+      "auroc": 0.8696822920073709,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790202.2133107
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t3": {
+      "K": 3,
+      "auroc": 0.8704533872162937,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790214.4147356
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t4": {
+      "K": 4,
+      "auroc": 0.8365872895091022,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790228.275177
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t5": {
+      "K": 5,
+      "auroc": 0.8371727722910238,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790250.071969
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t6": {
+      "K": 6,
+      "auroc": 0.8147384135346779,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790273.0357025
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t7": {
+      "K": 7,
+      "auroc": 0.8204438755641221,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790304.3611677
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t8": {
+      "K": 8,
+      "auroc": 0.820004095941039,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790339.7527316
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tNINCO_OOD_classes\t9": {
+      "K": 9,
+      "auroc": 0.8122054497795587,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790379.8139527
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t1": {
+      "K": 1,
+      "auroc": 0.7920741339999999,
+      "dataset": "imagenet_c",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790196.8497627
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t10": {
+      "K": 10,
+      "auroc": 0.812451606,
+      "dataset": "imagenet_c",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790465.1381423
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t11": {
+      "K": 11,
+      "auroc": 0.8141775840000001,
+      "dataset": "imagenet_c",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790523.7696154
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t12": {
+      "K": 12,
+      "auroc": 0.8198101099999999,
+      "dataset": "imagenet_c",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790588.5785677
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t13": {
+      "K": 13,
+      "auroc": 0.824071108,
+      "dataset": "imagenet_c",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790659.4259095
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t14": {
+      "K": 14,
+      "auroc": 0.827763536,
+      "dataset": "imagenet_c",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791310.3785686
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t15": {
+      "K": 15,
+      "auroc": 0.8307732160000001,
+      "dataset": "imagenet_c",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792040.0635874
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t16": {
+      "K": 16,
+      "auroc": 0.83422665,
+      "dataset": "imagenet_c",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792873.718813
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t17": {
+      "K": 17,
+      "auroc": 0.8365992360000001,
+      "dataset": "imagenet_c",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793709.8220575
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t18": {
+      "K": 18,
+      "auroc": 0.8384159800000001,
+      "dataset": "imagenet_c",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794608.5483477
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t19": {
+      "K": 19,
+      "auroc": 0.8444091199999999,
+      "dataset": "imagenet_c",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795506.5281584
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t2": {
+      "K": 2,
+      "auroc": 0.8252397859999999,
+      "dataset": "imagenet_c",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790208.3269525
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t3": {
+      "K": 3,
+      "auroc": 0.8372079399999999,
+      "dataset": "imagenet_c",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790220.9317763
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t4": {
+      "K": 4,
+      "auroc": 0.806171982,
+      "dataset": "imagenet_c",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790239.845192
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t5": {
+      "K": 5,
+      "auroc": 0.8112490120000001,
+      "dataset": "imagenet_c",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790261.770824
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t6": {
+      "K": 6,
+      "auroc": 0.784742614,
+      "dataset": "imagenet_c",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790290.0175211
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t7": {
+      "K": 7,
+      "auroc": 0.8188726999999998,
+      "dataset": "imagenet_c",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790323.1771524
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t8": {
+      "K": 8,
+      "auroc": 0.825013808,
+      "dataset": "imagenet_c",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790361.180153
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_c\t9": {
+      "K": 9,
+      "auroc": 0.8081981,
+      "dataset": "imagenet_c",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790407.3050742
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t1": {
+      "K": 1,
+      "auroc": 0.739653550625,
+      "dataset": "imagenet_es",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790199.5035603
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t10": {
+      "K": 10,
+      "auroc": 0.7907187243749999,
+      "dataset": "imagenet_es",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790482.8780274
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t11": {
+      "K": 11,
+      "auroc": 0.79119806,
+      "dataset": "imagenet_es",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790543.9110239
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t12": {
+      "K": 12,
+      "auroc": 0.7996366165625,
+      "dataset": "imagenet_es",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790610.6303215
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t13": {
+      "K": 13,
+      "auroc": 0.8024006775,
+      "dataset": "imagenet_es",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790683.6258233
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t14": {
+      "K": 14,
+      "auroc": 0.8061020968749999,
+      "dataset": "imagenet_es",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791336.4755065
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t15": {
+      "K": 15,
+      "auroc": 0.8091808496875,
+      "dataset": "imagenet_es",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792068.0273008
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t16": {
+      "K": 16,
+      "auroc": 0.8125115056250001,
+      "dataset": "imagenet_es",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792904.6590977
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t17": {
+      "K": 17,
+      "auroc": 0.8157006790625001,
+      "dataset": "imagenet_es",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793741.1766174
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t18": {
+      "K": 18,
+      "auroc": 0.8181529053125001,
+      "dataset": "imagenet_es",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794641.1478908
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t19": {
+      "K": 19,
+      "auroc": 0.8264316646875001,
+      "dataset": "imagenet_es",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795538.9080174
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t2": {
+      "K": 2,
+      "auroc": 0.7797959284375,
+      "dataset": "imagenet_es",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790211.6805103
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t3": {
+      "K": 3,
+      "auroc": 0.799730686875,
+      "dataset": "imagenet_es",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790224.926452
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t4": {
+      "K": 4,
+      "auroc": 0.7719117565625,
+      "dataset": "imagenet_es",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790246.453921
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t5": {
+      "K": 5,
+      "auroc": 0.7812871765625,
+      "dataset": "imagenet_es",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790269.022828
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t6": {
+      "K": 6,
+      "auroc": 0.7577791953124999,
+      "dataset": "imagenet_es",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790299.7344408
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t7": {
+      "K": 7,
+      "auroc": 0.798114155625,
+      "dataset": "imagenet_es",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790334.9063854
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t8": {
+      "K": 8,
+      "auroc": 0.8004517824999999,
+      "dataset": "imagenet_es",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790373.561853
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_es\t9": {
+      "K": 9,
+      "auroc": 0.7891317125,
+      "dataset": "imagenet_es",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790423.4778786
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t1": {
+      "K": 1,
+      "auroc": 0.8733077866666665,
+      "dataset": "imagenet_r",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790196.3702807
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t10": {
+      "K": 10,
+      "auroc": 0.8789673926666667,
+      "dataset": "imagenet_r",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790462.1438253
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t11": {
+      "K": 11,
+      "auroc": 0.8791396046666667,
+      "dataset": "imagenet_r",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790520.2828782
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t12": {
+      "K": 12,
+      "auroc": 0.8803465446666667,
+      "dataset": "imagenet_r",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790584.8105853
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t13": {
+      "K": 13,
+      "auroc": 0.8810356279999999,
+      "dataset": "imagenet_r",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790655.4462976
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t14": {
+      "K": 14,
+      "auroc": 0.8816779266666667,
+      "dataset": "imagenet_r",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791305.9447331
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t15": {
+      "K": 15,
+      "auroc": 0.882086386,
+      "dataset": "imagenet_r",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792035.006123
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t16": {
+      "K": 16,
+      "auroc": 0.8826822853333334,
+      "dataset": "imagenet_r",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792868.4744964
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t17": {
+      "K": 17,
+      "auroc": 0.8829598186666667,
+      "dataset": "imagenet_r",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793704.481225
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t18": {
+      "K": 18,
+      "auroc": 0.8835448646666666,
+      "dataset": "imagenet_r",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794603.2449021
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t19": {
+      "K": 19,
+      "auroc": 0.8844637273333333,
+      "dataset": "imagenet_r",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795501.0664408
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t2": {
+      "K": 2,
+      "auroc": 0.8808370919999999,
+      "dataset": "imagenet_r",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790207.7476134
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t3": {
+      "K": 3,
+      "auroc": 0.8831900346666667,
+      "dataset": "imagenet_r",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790220.3479655
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t4": {
+      "K": 4,
+      "auroc": 0.8793405526666667,
+      "dataset": "imagenet_r",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790238.62173
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t5": {
+      "K": 5,
+      "auroc": 0.88028803,
+      "dataset": "imagenet_r",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790260.5649288
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t6": {
+      "K": 6,
+      "auroc": 0.8717093193333334,
+      "dataset": "imagenet_r",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790288.2729015
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t7": {
+      "K": 7,
+      "auroc": 0.879459238,
+      "dataset": "imagenet_r",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790321.2477777
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t8": {
+      "K": 8,
+      "auroc": 0.8799238386666666,
+      "dataset": "imagenet_r",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790358.9328136
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_r\t9": {
+      "K": 9,
+      "auroc": 0.8785654666666667,
+      "dataset": "imagenet_r",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790404.1179156
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t1": {
+      "K": 1,
+      "auroc": 0.5926941139999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790199.9534056
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t10": {
+      "K": 10,
+      "auroc": 0.5891942840000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790486.5464888
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t11": {
+      "K": 11,
+      "auroc": 0.589027344,
+      "dataset": "imagenet_v2",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790547.3407423
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t12": {
+      "K": 12,
+      "auroc": 0.589626688,
+      "dataset": "imagenet_v2",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790614.3034515
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t13": {
+      "K": 13,
+      "auroc": 0.5895715159999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790687.8659563
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t14": {
+      "K": 14,
+      "auroc": 0.589780438,
+      "dataset": "imagenet_v2",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791341.1231964
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t15": {
+      "K": 15,
+      "auroc": 0.5900081699999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792072.9198332
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t16": {
+      "K": 16,
+      "auroc": 0.590436734,
+      "dataset": "imagenet_v2",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792909.7943366
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t17": {
+      "K": 17,
+      "auroc": 0.5908969,
+      "dataset": "imagenet_v2",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793746.4301007
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t18": {
+      "K": 18,
+      "auroc": 0.59124698,
+      "dataset": "imagenet_v2",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794646.471267
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t19": {
+      "K": 19,
+      "auroc": 0.592321052,
+      "dataset": "imagenet_v2",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795544.6456637
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t2": {
+      "K": 2,
+      "auroc": 0.5970084419999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790212.2333128
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t3": {
+      "K": 3,
+      "auroc": 0.6025098939999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790225.5527782
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t4": {
+      "K": 4,
+      "auroc": 0.5867003020000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790247.6204824
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t5": {
+      "K": 5,
+      "auroc": 0.588068696,
+      "dataset": "imagenet_v2",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790270.4162612
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t6": {
+      "K": 6,
+      "auroc": 0.5792922739999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790301.496036
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t7": {
+      "K": 7,
+      "auroc": 0.58655152,
+      "dataset": "imagenet_v2",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790336.7946537
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t8": {
+      "K": 8,
+      "auroc": 0.5865476079999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790376.2887905
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\timagenet_v2\t9": {
+      "K": 9,
+      "auroc": 0.589151472,
+      "dataset": "imagenet_v2",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790426.3949473
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t1": {
+      "K": 1,
+      "auroc": 0.9311330858907303,
+      "dataset": "openimages_o",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790192.6154404
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t10": {
+      "K": 10,
+      "auroc": 0.9111654987711891,
+      "dataset": "openimages_o",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790439.5810735
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t11": {
+      "K": 11,
+      "auroc": 0.9111441628331969,
+      "dataset": "openimages_o",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790495.85798
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t12": {
+      "K": 12,
+      "auroc": 0.9112420026466695,
+      "dataset": "openimages_o",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790557.5637562
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t13": {
+      "K": 13,
+      "auroc": 0.9116866456613524,
+      "dataset": "openimages_o",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790625.8100257
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t14": {
+      "K": 14,
+      "auroc": 0.9116368819711388,
+      "dataset": "openimages_o",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791273.7600906
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t15": {
+      "K": 15,
+      "auroc": 0.9118164585040015,
+      "dataset": "openimages_o",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791999.2680566
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t16": {
+      "K": 16,
+      "auroc": 0.9119463646102464,
+      "dataset": "openimages_o",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792829.8553698
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t17": {
+      "K": 17,
+      "auroc": 0.9115466708677296,
+      "dataset": "openimages_o",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793665.820139
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t18": {
+      "K": 18,
+      "auroc": 0.9112332320877183,
+      "dataset": "openimages_o",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794563.7618275
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t19": {
+      "K": 19,
+      "auroc": 0.9097420114689017,
+      "dataset": "openimages_o",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795460.230853
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t2": {
+      "K": 2,
+      "auroc": 0.9340454597013044,
+      "dataset": "openimages_o",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790203.3616045
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t3": {
+      "K": 3,
+      "auroc": 0.9336322956708047,
+      "dataset": "openimages_o",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790215.3524797
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t4": {
+      "K": 4,
+      "auroc": 0.9224927405633625,
+      "dataset": "openimages_o",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790230.4432583
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t5": {
+      "K": 5,
+      "auroc": 0.922268910454345,
+      "dataset": "openimages_o",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790252.3255892
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t6": {
+      "K": 6,
+      "auroc": 0.9163218589703195,
+      "dataset": "openimages_o",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790276.0051405
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t7": {
+      "K": 7,
+      "auroc": 0.9169771201714034,
+      "dataset": "openimages_o",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790307.6632912
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t8": {
+      "K": 8,
+      "auroc": 0.9170946953179153,
+      "dataset": "openimages_o",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790343.5050867
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\topenimages_o\t9": {
+      "K": 9,
+      "auroc": 0.9107328262650451,
+      "dataset": "openimages_o",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790383.7748625
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t1": {
+      "K": 1,
+      "auroc": 0.7377017453061224,
+      "dataset": "ssb_hard",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        18
+      ],
+      "updated_at_unix": 1777790194.9547064
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t10": {
+      "K": 10,
+      "auroc": 0.6645749391836734,
+      "dataset": "ssb_hard",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790453.551576
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t11": {
+      "K": 11,
+      "auroc": 0.6633570044897958,
+      "dataset": "ssb_hard",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790510.7392952
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t12": {
+      "K": 12,
+      "auroc": 0.6630258624489795,
+      "dataset": "ssb_hard",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790574.3500104
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t13": {
+      "K": 13,
+      "auroc": 0.6625538926530612,
+      "dataset": "ssb_hard",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790643.850295
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t14": {
+      "K": 14,
+      "auroc": 0.662256341632653,
+      "dataset": "ssb_hard",
+      "effective_K": 14,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777791293.3551517
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t15": {
+      "K": 15,
+      "auroc": 0.6622220240816326,
+      "dataset": "ssb_hard",
+      "effective_K": 15,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792021.3629186
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t16": {
+      "K": 16,
+      "auroc": 0.6624903216326531,
+      "dataset": "ssb_hard",
+      "effective_K": 16,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777792853.5665388
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t17": {
+      "K": 17,
+      "auroc": 0.6620642930612246,
+      "dataset": "ssb_hard",
+      "effective_K": 17,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777793689.4608727
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t18": {
+      "K": 18,
+      "auroc": 0.6614783338775511,
+      "dataset": "ssb_hard",
+      "effective_K": 18,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777794588.0148275
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t19": {
+      "K": 19,
+      "auroc": 0.65714936,
+      "dataset": "ssb_hard",
+      "effective_K": 19,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777795485.5685644
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t2": {
+      "K": 2,
+      "auroc": 0.7337640648979592,
+      "dataset": "ssb_hard",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        18
+      ],
+      "updated_at_unix": 1777790205.8414407
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t3": {
+      "K": 3,
+      "auroc": 0.7302668069387755,
+      "dataset": "ssb_hard",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        18
+      ],
+      "updated_at_unix": 1777790218.1537561
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t4": {
+      "K": 4,
+      "auroc": 0.686441821632653,
+      "dataset": "ssb_hard",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790235.4436638
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t5": {
+      "K": 5,
+      "auroc": 0.685770215510204,
+      "dataset": "ssb_hard",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        18
+      ],
+      "updated_at_unix": 1777790257.3944445
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t6": {
+      "K": 6,
+      "auroc": 0.6638545653061225,
+      "dataset": "ssb_hard",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790283.4399107
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t7": {
+      "K": 7,
+      "auroc": 0.6649271673469388,
+      "dataset": "ssb_hard",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790316.1523001
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t8": {
+      "K": 8,
+      "auroc": 0.6633904575510203,
+      "dataset": "ssb_hard",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        18
+      ],
+      "updated_at_unix": 1777790353.000324
+    },
+    "classwise_auroc\tconvnext_tiny.fb_in1k\tssb_hard\t9": {
+      "K": 9,
+      "auroc": 0.6650550902040816,
+      "dataset": "ssb_hard",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "convnext_tiny.fb_in1k",
+      "selected_layer_indices": [
+        3,
+        4,
+        5,
+        6,
+        13,
+        15,
+        16,
+        17,
+        18
+      ],
+      "updated_at_unix": 1777790396.2556248
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tNINCO_OOD_classes\t1": {
+      "K": 1,
+      "auroc": 0.8368287745190102,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790068.3021443
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tNINCO_OOD_classes\t2": {
+      "K": 2,
+      "auroc": 0.8327290719480497,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790089.3928282
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tNINCO_OOD_classes\t3": {
+      "K": 3,
+      "auroc": 0.8174095604217069,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790115.2462573
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tNINCO_OOD_classes\t4": {
+      "K": 4,
+      "auroc": 0.8109657744500123,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790153.165755
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_c\t1": {
+      "K": 1,
+      "auroc": 0.8251238840000001,
+      "dataset": "imagenet_c",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790078.584327
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_c\t2": {
+      "K": 2,
+      "auroc": 0.859393692,
+      "dataset": "imagenet_c",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790102.787924
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_c\t3": {
+      "K": 3,
+      "auroc": 0.867196286,
+      "dataset": "imagenet_c",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790135.697868
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_c\t4": {
+      "K": 4,
+      "auroc": 0.869569544,
+      "dataset": "imagenet_c",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790174.8470294
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_es\t1": {
+      "K": 1,
+      "auroc": 0.78286247875,
+      "dataset": "imagenet_es",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790084.7787607
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_es\t2": {
+      "K": 2,
+      "auroc": 0.832201255,
+      "dataset": "imagenet_es",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790110.6014264
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_es\t3": {
+      "K": 3,
+      "auroc": 0.834897036875,
+      "dataset": "imagenet_es",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790147.7239132
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_es\t4": {
+      "K": 4,
+      "auroc": 0.8423864328124999,
+      "dataset": "imagenet_es",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790187.6636384
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_r\t1": {
+      "K": 1,
+      "auroc": 0.8378583126666667,
+      "dataset": "imagenet_r",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790077.4300516
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_r\t2": {
+      "K": 2,
+      "auroc": 0.8497520953333334,
+      "dataset": "imagenet_r",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790101.189592
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_r\t3": {
+      "K": 3,
+      "auroc": 0.8474935613333332,
+      "dataset": "imagenet_r",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790133.4035804
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_r\t4": {
+      "K": 4,
+      "auroc": 0.8462509813333334,
+      "dataset": "imagenet_r",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790172.5284252
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_v2\t1": {
+      "K": 1,
+      "auroc": 0.5688730860000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790086.050329
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_v2\t2": {
+      "K": 2,
+      "auroc": 0.569812138,
+      "dataset": "imagenet_v2",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790112.0338974
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_v2\t3": {
+      "K": 3,
+      "auroc": 0.566236462,
+      "dataset": "imagenet_v2",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790149.9478061
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\timagenet_v2\t4": {
+      "K": 4,
+      "auroc": 0.565082574,
+      "dataset": "imagenet_v2",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790190.0371616
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\topenimages_o\t1": {
+      "K": 1,
+      "auroc": 0.8742637217215956,
+      "dataset": "openimages_o",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790070.0464869
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\topenimages_o\t2": {
+      "K": 2,
+      "auroc": 0.872693469027664,
+      "dataset": "openimages_o",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790091.6535923
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\topenimages_o\t3": {
+      "K": 3,
+      "auroc": 0.8707104795513265,
+      "dataset": "openimages_o",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790118.5199652
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\topenimages_o\t4": {
+      "K": 4,
+      "auroc": 0.8638175348163085,
+      "dataset": "openimages_o",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790156.6419406
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tssb_hard\t1": {
+      "K": 1,
+      "auroc": 0.7187060089795918,
+      "dataset": "ssb_hard",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        3
+      ],
+      "updated_at_unix": 1777790074.4858465
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tssb_hard\t2": {
+      "K": 2,
+      "auroc": 0.71086654,
+      "dataset": "ssb_hard",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        3
+      ],
+      "updated_at_unix": 1777790097.3006837
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tssb_hard\t3": {
+      "K": 3,
+      "auroc": 0.6936216787755102,
+      "dataset": "ssb_hard",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790127.6044393
+    },
+    "classwise_auroc\tresnet50.tv2_in1k\tssb_hard\t4": {
+      "K": 4,
+      "auroc": 0.6876734159183673,
+      "dataset": "ssb_hard",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "resnet50.tv2_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "updated_at_unix": 1777790166.392276
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t1": {
+      "K": 1,
+      "auroc": 0.8586160322756089,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795546.4582648
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t10": {
+      "K": 10,
+      "auroc": 0.7573636006219394,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795799.0898163
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t11": {
+      "K": 11,
+      "auroc": 0.7566881174732306,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795850.7616189
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t12": {
+      "K": 12,
+      "auroc": 0.7554433092627556,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795908.4023101
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t13": {
+      "K": 13,
+      "auroc": 0.7539855803614606,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795968.0522435
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t2": {
+      "K": 2,
+      "auroc": 0.8554867410378639,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795559.6107235
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t3": {
+      "K": 3,
+      "auroc": 0.7799811610766819,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795576.259525
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t4": {
+      "K": 4,
+      "auroc": 0.7762846708258984,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795597.7920454
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t5": {
+      "K": 5,
+      "auroc": 0.7761032694582348,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795619.6551883
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t6": {
+      "K": 6,
+      "auroc": 0.7596962086326178,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795642.4237154
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t7": {
+      "K": 7,
+      "auroc": 0.7585345626550197,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795675.3441243
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t8": {
+      "K": 8,
+      "auroc": 0.7602698746705827,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795712.6377807
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tNINCO_OOD_classes\t9": {
+      "K": 9,
+      "auroc": 0.7579563249404253,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795752.9900117
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t1": {
+      "K": 1,
+      "auroc": 0.795467734,
+      "dataset": "imagenet_c",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795551.486144
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t10": {
+      "K": 10,
+      "auroc": 0.8599888120000001,
+      "dataset": "imagenet_c",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795826.9627295
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t11": {
+      "K": 11,
+      "auroc": 0.869551884,
+      "dataset": "imagenet_c",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795882.5155363
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t12": {
+      "K": 12,
+      "auroc": 0.8697270699999999,
+      "dataset": "imagenet_c",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795941.417443
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t13": {
+      "K": 13,
+      "auroc": 0.87040055,
+      "dataset": "imagenet_c",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796000.595178
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t2": {
+      "K": 2,
+      "auroc": 0.8626233479999998,
+      "dataset": "imagenet_c",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795569.3396358
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t3": {
+      "K": 3,
+      "auroc": 0.812564706,
+      "dataset": "imagenet_c",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795587.2124712
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t4": {
+      "K": 4,
+      "auroc": 0.8219856059999999,
+      "dataset": "imagenet_c",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795609.2785072
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t5": {
+      "K": 5,
+      "auroc": 0.829380824,
+      "dataset": "imagenet_c",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795631.5196602
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t6": {
+      "K": 6,
+      "auroc": 0.802653154,
+      "dataset": "imagenet_c",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795660.083074
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t7": {
+      "K": 7,
+      "auroc": 0.81650558,
+      "dataset": "imagenet_c",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795694.7579315
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t8": {
+      "K": 8,
+      "auroc": 0.837881306,
+      "dataset": "imagenet_c",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795734.2778819
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_c\t9": {
+      "K": 9,
+      "auroc": 0.8470316980000001,
+      "dataset": "imagenet_c",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795778.0041962
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t1": {
+      "K": 1,
+      "auroc": 0.7646259881249999,
+      "dataset": "imagenet_es",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795554.5168471
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t10": {
+      "K": 10,
+      "auroc": 0.8348127453125,
+      "dataset": "imagenet_es",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795843.7392719
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t11": {
+      "K": 11,
+      "auroc": 0.8392657059374999,
+      "dataset": "imagenet_es",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795900.9587934
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t12": {
+      "K": 12,
+      "auroc": 0.842910013125,
+      "dataset": "imagenet_es",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795960.907202
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t13": {
+      "K": 13,
+      "auroc": 0.8442456725,
+      "dataset": "imagenet_es",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796019.8904943
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t2": {
+      "K": 2,
+      "auroc": 0.8625234490625,
+      "dataset": "imagenet_es",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795572.9525452
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t3": {
+      "K": 3,
+      "auroc": 0.8066266325,
+      "dataset": "imagenet_es",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795593.8619893
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t4": {
+      "K": 4,
+      "auroc": 0.825819529375,
+      "dataset": "imagenet_es",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795616.029999
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t5": {
+      "K": 5,
+      "auroc": 0.8394976075,
+      "dataset": "imagenet_es",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795638.4895713
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t6": {
+      "K": 6,
+      "auroc": 0.8146011318749999,
+      "dataset": "imagenet_es",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795670.4266233
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t7": {
+      "K": 7,
+      "auroc": 0.8171007684375,
+      "dataset": "imagenet_es",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795706.9952576
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t8": {
+      "K": 8,
+      "auroc": 0.8245701750000001,
+      "dataset": "imagenet_es",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795747.034999
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_es\t9": {
+      "K": 9,
+      "auroc": 0.8239805584375001,
+      "dataset": "imagenet_es",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795793.0435529
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t1": {
+      "K": 1,
+      "auroc": 0.8829498973333333,
+      "dataset": "imagenet_r",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795551.0362005
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t10": {
+      "K": 10,
+      "auroc": 0.8635969626666666,
+      "dataset": "imagenet_r",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795824.1184971
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t11": {
+      "K": 11,
+      "auroc": 0.8647523399999999,
+      "dataset": "imagenet_r",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795879.143087
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t12": {
+      "K": 12,
+      "auroc": 0.8646989626666666,
+      "dataset": "imagenet_r",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795938.2599902
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t13": {
+      "K": 13,
+      "auroc": 0.8644501573333334,
+      "dataset": "imagenet_r",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795997.2898688
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t2": {
+      "K": 2,
+      "auroc": 0.8929374480000001,
+      "dataset": "imagenet_r",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795568.8260162
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t3": {
+      "K": 3,
+      "auroc": 0.8578680893333333,
+      "dataset": "imagenet_r",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795586.0667548
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t4": {
+      "K": 4,
+      "auroc": 0.8617910653333333,
+      "dataset": "imagenet_r",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795608.0776367
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t5": {
+      "K": 5,
+      "auroc": 0.8642501106666667,
+      "dataset": "imagenet_r",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795630.3449945
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t6": {
+      "K": 6,
+      "auroc": 0.8604125253333332,
+      "dataset": "imagenet_r",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795658.3410804
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t7": {
+      "K": 7,
+      "auroc": 0.8596626260000001,
+      "dataset": "imagenet_r",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795692.7748852
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t8": {
+      "K": 8,
+      "auroc": 0.8624216693333334,
+      "dataset": "imagenet_r",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795731.937781
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_r\t9": {
+      "K": 9,
+      "auroc": 0.861791448,
+      "dataset": "imagenet_r",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795775.4464371
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t1": {
+      "K": 1,
+      "auroc": 0.5910734999999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795554.9559581
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t10": {
+      "K": 10,
+      "auroc": 0.591458932,
+      "dataset": "imagenet_v2",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795846.8713498
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t11": {
+      "K": 11,
+      "auroc": 0.59331088,
+      "dataset": "imagenet_v2",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795904.410033
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t12": {
+      "K": 12,
+      "auroc": 0.594024174,
+      "dataset": "imagenet_v2",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795964.2173665
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t13": {
+      "K": 13,
+      "auroc": 0.5946500279999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796023.5607078
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t2": {
+      "K": 2,
+      "auroc": 0.606695332,
+      "dataset": "imagenet_v2",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795573.8460388
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t3": {
+      "K": 3,
+      "auroc": 0.58477211,
+      "dataset": "imagenet_v2",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795594.952895
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t4": {
+      "K": 4,
+      "auroc": 0.5871577640000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795617.2618785
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t5": {
+      "K": 5,
+      "auroc": 0.588850836,
+      "dataset": "imagenet_v2",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795639.7090473
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t6": {
+      "K": 6,
+      "auroc": 0.588383678,
+      "dataset": "imagenet_v2",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795672.3883288
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t7": {
+      "K": 7,
+      "auroc": 0.586845788,
+      "dataset": "imagenet_v2",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795709.2923143
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t8": {
+      "K": 8,
+      "auroc": 0.589086598,
+      "dataset": "imagenet_v2",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795749.6189005
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\timagenet_v2\t9": {
+      "K": 9,
+      "auroc": 0.58792344,
+      "dataset": "imagenet_v2",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795795.5431826
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t1": {
+      "K": 1,
+      "auroc": 0.9316405469783855,
+      "dataset": "openimages_o",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795547.4621708
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t10": {
+      "K": 10,
+      "auroc": 0.8501310983678871,
+      "dataset": "openimages_o",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795803.2705328
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t11": {
+      "K": 11,
+      "auroc": 0.8492497813346777,
+      "dataset": "openimages_o",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795856.0864902
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t12": {
+      "K": 12,
+      "auroc": 0.8470288209717058,
+      "dataset": "openimages_o",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795913.8323448
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t13": {
+      "K": 13,
+      "auroc": 0.8457831142479048,
+      "dataset": "openimages_o",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795973.4770274
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t2": {
+      "K": 2,
+      "auroc": 0.9244347356481191,
+      "dataset": "openimages_o",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795562.4773479
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t3": {
+      "K": 3,
+      "auroc": 0.8590262688260131,
+      "dataset": "openimages_o",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795578.2949896
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t4": {
+      "K": 4,
+      "auroc": 0.8557606225975172,
+      "dataset": "openimages_o",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795599.9471397
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t5": {
+      "K": 5,
+      "auroc": 0.8542403869178903,
+      "dataset": "openimages_o",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795621.9713044
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t6": {
+      "K": 6,
+      "auroc": 0.845290591719705,
+      "dataset": "openimages_o",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795645.4733946
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t7": {
+      "K": 7,
+      "auroc": 0.848526810763123,
+      "dataset": "openimages_o",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795678.7446036
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t8": {
+      "K": 8,
+      "auroc": 0.8512863268006806,
+      "dataset": "openimages_o",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795715.7996595
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\topenimages_o\t9": {
+      "K": 9,
+      "auroc": 0.8526112458251938,
+      "dataset": "openimages_o",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795757.054275
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t1": {
+      "K": 1,
+      "auroc": 0.7132624118367348,
+      "dataset": "ssb_hard",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777795549.6840377
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t10": {
+      "K": 10,
+      "auroc": 0.613887852244898,
+      "dataset": "ssb_hard",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795816.2702956
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t11": {
+      "K": 11,
+      "auroc": 0.6146733004081633,
+      "dataset": "ssb_hard",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795870.0203876
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t12": {
+      "K": 12,
+      "auroc": 0.611975173877551,
+      "dataset": "ssb_hard",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795928.3781943
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t13": {
+      "K": 13,
+      "auroc": 0.609456855510204,
+      "dataset": "ssb_hard",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795988.1336272
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t2": {
+      "K": 2,
+      "auroc": 0.7036792710204081,
+      "dataset": "ssb_hard",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777795566.926233
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t3": {
+      "K": 3,
+      "auroc": 0.6419775775510204,
+      "dataset": "ssb_hard",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795583.181057
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t4": {
+      "K": 4,
+      "auroc": 0.6348570587755102,
+      "dataset": "ssb_hard",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795604.9101214
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t5": {
+      "K": 5,
+      "auroc": 0.6312540546938775,
+      "dataset": "ssb_hard",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        12
+      ],
+      "updated_at_unix": 1777795627.0648441
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t6": {
+      "K": 6,
+      "auroc": 0.6215903681632653,
+      "dataset": "ssb_hard",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795653.4041183
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t7": {
+      "K": 7,
+      "auroc": 0.6171095653061224,
+      "dataset": "ssb_hard",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795687.4396577
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t8": {
+      "K": 8,
+      "auroc": 0.6176772604081633,
+      "dataset": "ssb_hard",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795725.954348
+    },
+    "classwise_auroc\tswin_tiny_patch4_window7_224.ms_in1k\tssb_hard\t9": {
+      "K": 9,
+      "auroc": 0.6137218812244898,
+      "dataset": "ssb_hard",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "swin_tiny_patch4_window7_224.ms_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777795768.215396
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t1": {
+      "K": 1,
+      "auroc": 0.897061438976297,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796025.6988487
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t10": {
+      "K": 10,
+      "auroc": 0.8475456731362607,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796457.1446588
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t11": {
+      "K": 11,
+      "auroc": 0.8454932078944191,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796567.6151361
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t12": {
+      "K": 12,
+      "auroc": 0.8449165007397625,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796694.8157902
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t13": {
+      "K": 13,
+      "auroc": 0.8445463684194436,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798450.1741128
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t2": {
+      "K": 2,
+      "auroc": 0.9083708409589197,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796037.2460496
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t3": {
+      "K": 3,
+      "auroc": 0.8603736356545835,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796054.6866896
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t4": {
+      "K": 4,
+      "auroc": 0.8510680986735861,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796080.3207762
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t5": {
+      "K": 5,
+      "auroc": 0.8558478825911005,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796114.6730802
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t6": {
+      "K": 6,
+      "auroc": 0.8518881126390397,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796158.636661
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t7": {
+      "K": 7,
+      "auroc": 0.8517725036042083,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796217.4824765
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t8": {
+      "K": 8,
+      "auroc": 0.8530439454787091,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796282.1289334
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tNINCO_OOD_classes\t9": {
+      "K": 9,
+      "auroc": 0.8530773469086175,
+      "dataset": "NINCO_OOD_classes",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796362.2953837
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t1": {
+      "K": 1,
+      "auroc": 0.7481741,
+      "dataset": "imagenet_c",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796030.7510562
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t10": {
+      "K": 10,
+      "auroc": 0.8260541640000001,
+      "dataset": "imagenet_c",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796518.3129265
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t11": {
+      "K": 11,
+      "auroc": 0.829472998,
+      "dataset": "imagenet_c",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796637.6087015
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t12": {
+      "K": 12,
+      "auroc": 0.8310931779999999,
+      "dataset": "imagenet_c",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796776.0779278
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t13": {
+      "K": 13,
+      "auroc": 0.8317854020000001,
+      "dataset": "imagenet_c",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798540.8351789
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t2": {
+      "K": 2,
+      "auroc": 0.8434624580000001,
+      "dataset": "imagenet_c",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796045.95723
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t3": {
+      "K": 3,
+      "auroc": 0.8020701179999999,
+      "dataset": "imagenet_c",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796068.0555174
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t4": {
+      "K": 4,
+      "auroc": 0.775184356,
+      "dataset": "imagenet_c",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796098.7581973
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t5": {
+      "K": 5,
+      "auroc": 0.81776222,
+      "dataset": "imagenet_c",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796137.866403
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t6": {
+      "K": 6,
+      "auroc": 0.804238962,
+      "dataset": "imagenet_c",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796191.466452
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t7": {
+      "K": 7,
+      "auroc": 0.811577928,
+      "dataset": "imagenet_c",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796252.4641385
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t8": {
+      "K": 8,
+      "auroc": 0.828155032,
+      "dataset": "imagenet_c",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796327.0149426
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_c\t9": {
+      "K": 9,
+      "auroc": 0.834453992,
+      "dataset": "imagenet_c",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796414.5760438
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t1": {
+      "K": 1,
+      "auroc": 0.7341934809374999,
+      "dataset": "imagenet_es",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796033.7070756
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t10": {
+      "K": 10,
+      "auroc": 0.7987823865624999,
+      "dataset": "imagenet_es",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796554.4183621
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t11": {
+      "K": 11,
+      "auroc": 0.803736085625,
+      "dataset": "imagenet_es",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796679.6552718
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t12": {
+      "K": 12,
+      "auroc": 0.8063511968749999,
+      "dataset": "imagenet_es",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796823.2940564
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t13": {
+      "K": 13,
+      "auroc": 0.807254999375,
+      "dataset": "imagenet_es",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798594.0345101
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t2": {
+      "K": 2,
+      "auroc": 0.8169850918750001,
+      "dataset": "imagenet_es",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796050.7867472
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t3": {
+      "K": 3,
+      "auroc": 0.7915267890625,
+      "dataset": "imagenet_es",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796075.4619386
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t4": {
+      "K": 4,
+      "auroc": 0.7657665387500001,
+      "dataset": "imagenet_es",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796108.797897
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t5": {
+      "K": 5,
+      "auroc": 0.7877464740624999,
+      "dataset": "imagenet_es",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796151.5764723
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t6": {
+      "K": 6,
+      "auroc": 0.7771880675,
+      "dataset": "imagenet_es",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796209.348395
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t7": {
+      "K": 7,
+      "auroc": 0.7875559378125,
+      "dataset": "imagenet_es",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796272.7152536
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t8": {
+      "K": 8,
+      "auroc": 0.799665110625,
+      "dataset": "imagenet_es",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796352.086778
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_es\t9": {
+      "K": 9,
+      "auroc": 0.8066189384375,
+      "dataset": "imagenet_es",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796445.0745428
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t1": {
+      "K": 1,
+      "auroc": 0.8723693966666667,
+      "dataset": "imagenet_r",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796030.2904232
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t10": {
+      "K": 10,
+      "auroc": 0.8758634860000001,
+      "dataset": "imagenet_r",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796512.1604629
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t11": {
+      "K": 11,
+      "auroc": 0.8801418293333334,
+      "dataset": "imagenet_r",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796630.7159042
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t12": {
+      "K": 12,
+      "auroc": 0.8803900060000001,
+      "dataset": "imagenet_r",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796767.2727854
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t13": {
+      "K": 13,
+      "auroc": 0.8804471226666668,
+      "dataset": "imagenet_r",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798531.876087
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t2": {
+      "K": 2,
+      "auroc": 0.8884186053333334,
+      "dataset": "imagenet_r",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796045.232946
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t3": {
+      "K": 3,
+      "auroc": 0.873769222,
+      "dataset": "imagenet_r",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796066.6763163
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t4": {
+      "K": 4,
+      "auroc": 0.8659396533333332,
+      "dataset": "imagenet_r",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796096.8483305
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t5": {
+      "K": 5,
+      "auroc": 0.8744454413333334,
+      "dataset": "imagenet_r",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796135.3880298
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t6": {
+      "K": 6,
+      "auroc": 0.8709667313333334,
+      "dataset": "imagenet_r",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796188.6476796
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t7": {
+      "K": 7,
+      "auroc": 0.872169156,
+      "dataset": "imagenet_r",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796248.9782267
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t8": {
+      "K": 8,
+      "auroc": 0.8751911126666667,
+      "dataset": "imagenet_r",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796322.2747386
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_r\t9": {
+      "K": 9,
+      "auroc": 0.8762091059999999,
+      "dataset": "imagenet_r",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796409.0054672
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t1": {
+      "K": 1,
+      "auroc": 0.5951580140000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796034.3163848
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t10": {
+      "K": 10,
+      "auroc": 0.6010324060000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796560.4206696
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t11": {
+      "K": 11,
+      "auroc": 0.600640266,
+      "dataset": "imagenet_v2",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796686.9572122
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t12": {
+      "K": 12,
+      "auroc": 0.60064513,
+      "dataset": "imagenet_v2",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796831.193744
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t13": {
+      "K": 13,
+      "auroc": 0.600696636,
+      "dataset": "imagenet_v2",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798602.904236
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t2": {
+      "K": 2,
+      "auroc": 0.607777008,
+      "dataset": "imagenet_v2",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796051.7539315
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t3": {
+      "K": 3,
+      "auroc": 0.606366088,
+      "dataset": "imagenet_v2",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796077.0302873
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t4": {
+      "K": 4,
+      "auroc": 0.5972801820000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796111.0369155
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t5": {
+      "K": 5,
+      "auroc": 0.6090079700000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796154.386013
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t6": {
+      "K": 6,
+      "auroc": 0.600185524,
+      "dataset": "imagenet_v2",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796212.7914832
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t7": {
+      "K": 7,
+      "auroc": 0.600807338,
+      "dataset": "imagenet_v2",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796276.835781
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t8": {
+      "K": 8,
+      "auroc": 0.6057397640000001,
+      "dataset": "imagenet_v2",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796356.5417063
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\timagenet_v2\t9": {
+      "K": 9,
+      "auroc": 0.6067112139999999,
+      "dataset": "imagenet_v2",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796450.3766103
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t1": {
+      "K": 1,
+      "auroc": 0.9578026440562613,
+      "dataset": "openimages_o",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796026.5434074
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t10": {
+      "K": 10,
+      "auroc": 0.9356801724137931,
+      "dataset": "openimages_o",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796467.0899885
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t11": {
+      "K": 11,
+      "auroc": 0.9379398434664246,
+      "dataset": "openimages_o",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796580.4730213
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t12": {
+      "K": 12,
+      "auroc": 0.9377746676497278,
+      "dataset": "openimages_o",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796709.0301647
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t13": {
+      "K": 13,
+      "auroc": 0.937654802631579,
+      "dataset": "openimages_o",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798466.047507
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t2": {
+      "K": 2,
+      "auroc": 0.9640141436025407,
+      "dataset": "openimages_o",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796039.0975194
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t3": {
+      "K": 3,
+      "auroc": 0.92925902676951,
+      "dataset": "openimages_o",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796057.2334464
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t4": {
+      "K": 4,
+      "auroc": 0.927770914246824,
+      "dataset": "openimages_o",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796083.6984444
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t5": {
+      "K": 5,
+      "auroc": 0.9323436966878402,
+      "dataset": "openimages_o",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796118.4022982
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t6": {
+      "K": 6,
+      "auroc": 0.9331730818965518,
+      "dataset": "openimages_o",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796165.3727992
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t7": {
+      "K": 7,
+      "auroc": 0.9332462840290381,
+      "dataset": "openimages_o",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796223.5163074
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t8": {
+      "K": 8,
+      "auroc": 0.9343446234119782,
+      "dataset": "openimages_o",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796289.9697185
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\topenimages_o\t9": {
+      "K": 9,
+      "auroc": 0.9344175351633395,
+      "dataset": "openimages_o",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796371.3942058
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t1": {
+      "K": 1,
+      "auroc": 0.7606874902040817,
+      "dataset": "ssb_hard",
+      "effective_K": 1,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        12
+      ],
+      "updated_at_unix": 1777796028.9333222
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t10": {
+      "K": 10,
+      "auroc": 0.7159533395918367,
+      "dataset": "ssb_hard",
+      "effective_K": 10,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796495.2989614
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t11": {
+      "K": 11,
+      "auroc": 0.7113029089795918,
+      "dataset": "ssb_hard",
+      "effective_K": 11,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796611.4468725
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t12": {
+      "K": 12,
+      "auroc": 0.7104538461224489,
+      "dataset": "ssb_hard",
+      "effective_K": 12,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796744.8894644
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t13": {
+      "K": 13,
+      "auroc": 0.7100758314285713,
+      "dataset": "ssb_hard",
+      "effective_K": 13,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777798506.5779676
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t2": {
+      "K": 2,
+      "auroc": 0.7726197257142857,
+      "dataset": "ssb_hard",
+      "effective_K": 2,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        12
+      ],
+      "updated_at_unix": 1777796042.8732336
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t3": {
+      "K": 3,
+      "auroc": 0.7445485644897959,
+      "dataset": "ssb_hard",
+      "effective_K": 3,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796063.1940393
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t4": {
+      "K": 4,
+      "auroc": 0.7254151951020408,
+      "dataset": "ssb_hard",
+      "effective_K": 4,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796091.5350075
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t5": {
+      "K": 5,
+      "auroc": 0.7332726253061226,
+      "dataset": "ssb_hard",
+      "effective_K": 5,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796128.9971344
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t6": {
+      "K": 6,
+      "auroc": 0.7260572657142859,
+      "dataset": "ssb_hard",
+      "effective_K": 6,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796180.3123455
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t7": {
+      "K": 7,
+      "auroc": 0.7250575183673469,
+      "dataset": "ssb_hard",
+      "effective_K": 7,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796239.020495
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t8": {
+      "K": 8,
+      "auroc": 0.7279862783673469,
+      "dataset": "ssb_hard",
+      "effective_K": 8,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796309.662296
+    },
+    "classwise_auroc\tvit_base_patch16_224.augreg2_in21k_ft_in1k\tssb_hard\t9": {
+      "K": 9,
+      "auroc": 0.7275768546938775,
+      "dataset": "ssb_hard",
+      "effective_K": 9,
+      "metric_kind": "classwise_auroc",
+      "model": "vit_base_patch16_224.augreg2_in21k_ft_in1k",
+      "selected_layer_indices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12
+      ],
+      "updated_at_unix": 1777796394.401211
+    }
+  },
+  "version": 1
+}

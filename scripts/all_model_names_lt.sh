@@ -47,4 +47,5 @@ MODEL_NAMES=(
     # "tf_efficientnetv2_s.in1k"
     # "tf_efficientnetv2_l.in1k"
     "clip-ViT-B16"
+    "clip-ViT-L14-336"
 )

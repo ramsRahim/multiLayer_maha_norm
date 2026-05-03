@@ -15,7 +15,7 @@ from typing import Any
 METHODS = [
     "MSP",
     "Energy",
-    "Energy+React",
+    "React",
     "ODIN",
     "Mahalanobis",
     "Mahalanobis_norm",
@@ -37,9 +37,15 @@ ID_DATASET_LABELS = {
 OOD_DATASETS = [
     ("imagenet_o", "ImageNet-O"),
     ("NINCO_OOD_classes", "NINCO"),
-    ("openimages_o", "OpenImage-O"),
-    ("places365", "Places365"),
-    ("texture", "Textures"),
+    # ("openimages_o", "OpenImage-O"),
+    ("places365", "Places"),
+    ("texture", "Texture"),
+    # ("imagenet_c", "ImageNet-C"),
+    # ("imagenet_r", "ImageNet-R"),
+    # ("imagenet_es", "ImageNet-ES"),
+    # ("imagenet_v2", "ImageNet-V2"),
+    # ("ssb_hard", "SSB-Hard"),
+
 ]
 
 LATEX_METHOD_GROUPS = [
@@ -53,6 +59,7 @@ LATEX_METHOD_GROUPS = [
     [
         ("Mahalanobis", "Maha", False),
         ("Relative_Mahalanobis", "rMaha", False),
+        ("Relative_Mahalanobis_norm", "rMaha++", False),
         ("Mahalanobis_norm", "Maha++", False),
     ],
     [
@@ -83,10 +90,10 @@ MODEL_CHECKPOINTS = {
     # "DeiT3-B16-In21k": "deit3_base_patch16_224_in21ft1k",
     # "DeiT3-L16-In21k": "deit3_large_patch16_384.fb_in22k_ft_in1k",
     # "DeiT3-L16": "deit3_large_patch16_384.fb_in1k",
-    "DeiT3-B16-In1k": "deit3_base_patch16_384.fb_in1k",
+    # "DeiT3-B16-In1k": "deit3_base_patch16_384.fb_in1k",
     # "DeiT3-S16-In21k": "deit3_small_patch16_384.fb_in22k_ft_in1k",
     # "DeiT3-S16": "deit3_small_patch16_384.fb_in1k",
-    "Swin-T": "swin_tiny_patch4_window7_224.ms_in1k",
+    # "Swin-T": "swin_tiny_patch4_window7_224.ms_in1k",
     # "SwinV2-S": "swinv2_small_window16_256.ms_in1k",
     # "SwinV2-B": "swinv2_base_window16_256.ms_in1k",
     # "SwinV2-L-In21k": "swinv2_large_window12to24_192to384.ms_in22k_ft_in1k",
@@ -95,7 +102,7 @@ MODEL_CHECKPOINTS = {
     # "ResNet101": "resnet101.tv2_in1k",
     # "ResNet152": "resnet152.tv2_in1k",
     # "ResNet50-supcon": "r50supcon",
-    "ConvNeXt-T": "convnext_tiny.fb_in1k",
+    # "ConvNeXt-T": "convnext_tiny.fb_in1k",
     # "ConvNeXt-B": "convnext_base.fb_in1k",
     # "ConvNeXt-B-In21k": "convnext_base.fb_in22k_ft_in1k",
     # "ConvNeXtV2-L-In21k": "convnextv2_large.fcmae_ft_in22k_in1k_384",
@@ -108,6 +115,7 @@ MODEL_CHECKPOINTS = {
     # "EffNetV2-M": "tf_efficientnetv2_m.in1k",
     # "EffNetV2-S": "tf_efficientnetv2_s.in1k",
     # "EffNetV2-L": "tf_efficientnetv2_l.in1k",
+    "clip-ViT-B16": "clip-ViT-B16",
 }
 
 CHECKPOINT_ALIASES = {
@@ -539,8 +547,8 @@ def write_by_method_tables(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--metrics-json", type=Path, default=Path("cache/scores/metrics.json"))
-    parser.add_argument("--id-dataset", default="ImageNet1K")
+    parser.add_argument("--metrics-json", type=Path, default=Path("cache_imgnetlt/scores/metrics_xmaha_table2.json"))
+    parser.add_argument("--id-dataset", default="ImageNet-LT")
     parser.add_argument("--all-model-names", type=Path, default=Path("scripts/all_model_names.sh"))
     parser.add_argument("--output-dir", type=Path, default=Path("output"))
     parser.add_argument(

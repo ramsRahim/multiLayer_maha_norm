@@ -229,6 +229,10 @@ timm_models = {
                              'batch_size': 128, 'server': 'curie'},
     'xcit_medium_24_p16_224_dist': {'config': {'model_name': 'xcit_medium_24_p16_224.fb_dist_in1k', 'pretrained': True}},
     'xcit_medium_24_p16_224': {'config': {'model_name': 'xcit_medium_24_p16_224', 'pretrained': True}},
+    'clip-ViT-B16': {'config': {'model_name': 'vit_base_patch16_clip_224.openai_ft_in1k',
+                                'pretrained': True, 'num_classes': 1000}},
+    'clip-ViT-L14-336': {'config': {'model_name': 'vit_large_patch14_clip_336.openai_ft_in12k_in1k',
+                                    'pretrained': True, 'num_classes': 1000}},
 }
 
 
@@ -586,7 +590,7 @@ def get_layer_config(model, model_name):
     name = model_name.lower()
     layers = []
 
-    if any(x in name for x in ['vit_', 'deit3_', 'deit_', 'eva02_', 'xcit_']):
+    if any(x in name for x in ['vit_', 'vit-', 'deit3_', 'deit_', 'eva02_', 'xcit_']):
         for i, block in enumerate(model.blocks):
             layers.append((f'block_{i:02d}', block, 'cls'))
         # Add the final LayerNorm output (post-norm CLS token = pre-logit feature)
