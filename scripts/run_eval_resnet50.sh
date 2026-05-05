@@ -1,8 +1,12 @@
 #!/bin/bash
-# Evaluate 10 methods on 7 OOD datasets for ViT-B/16
+cd "$(dirname "$0")/.."
+# Evaluate 10 methods on 7 OOD datasets for ResNet-50
+# ID data: Standard ImageNet 100K (train for covariance, val for ID scoring)
 
-MODEL="vit_base_patch16_224.augreg2_in21k_ft_in1k"
-CACHE="./cache"
+MODEL="resnet50.tv2_in1k"
+CACHE="./cache_imagenetlt"
+TRAIN_DIR="/home/rahim/exp/Data/imagenetlt/train"
+VAL_DIR="/home/rahim/exp/Data/imagenetlt/test"
 PREFIX_OPENOOD="/home/rahim/exp/Data/openood_data"
 PREFIX_NINCO="/home/rahim/exp/Data/NINCO/NINCO"
 
@@ -19,7 +23,6 @@ METHODS=(
     MM_plus_plus_topk_cat
 )
 
-# dataset_csv : prefix
 declare -A DATASETS
 DATASETS["./data/NINCO_OOD_classes.csv"]="$PREFIX_NINCO"
 DATASETS["./data/openimages_o.csv"]="$PREFIX_OPENOOD"
@@ -39,7 +42,7 @@ DATASET_ORDER=(
     "./data/imagenet_v2.csv"
 )
 
-LOG="/tmp/run_eval_$(date +%Y%m%d_%H%M%S).log"
+LOG="/tmp/run_eval_resnet50_$(date +%Y%m%d_%H%M%S).log"
 echo "Logging to $LOG"
 
 for DS in "${DATASET_ORDER[@]}"; do
@@ -58,7 +61,9 @@ for DS in "${DATASET_ORDER[@]}"; do
             --dataset_paths_prefix "$PREFIX" \
             --method "$METHOD" \
             --path_to_cache "$CACHE" \
-            2>&1 | grep -E "AUROC|fpr at|Error|Traceback|Done|method not"
+            --train_dir "$TRAIN_DIR" \
+            --val_dir "$VAL_DIR" \
+            2>&1 | grep -E "Auroc|fpr at|Error|Traceback|Done|method not"
         echo "[$(date '+%H:%M:%S')] Done: $METHOD"
     done
 done | tee "$LOG"

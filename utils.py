@@ -285,7 +285,8 @@ def extract_features(model, dataset, savepath, wo_head=False):
             slice_datasets[i] = torch.utils.data.Subset(dataset, index_slices[i])
             slice_datasets[i].__name__ = f'slice{index_slices[i].start}_to_{index_slices[i].stop}'
             slice_datasets[i].classes = dataset.classes
-            dataloader = torch.utils.data.DataLoader(slice_datasets[i], batch_size=model.batch_size)
+            dataloader = torch.utils.data.DataLoader(slice_datasets[i], batch_size=model.batch_size,
+                                                      num_workers=8, pin_memory=True)
 
             features = []
             logits_ = []
@@ -691,7 +692,8 @@ def extract_intermediate_features(model, dataset, savepath):
         indices = list(range(slice_i * slice_length,
                              min((slice_i + 1) * slice_length, len(dataset))))
         subset = torch.utils.data.Subset(dataset, indices)
-        dataloader = torch.utils.data.DataLoader(subset, batch_size=model.batch_size)
+        dataloader = torch.utils.data.DataLoader(subset, batch_size=model.batch_size,
+                                                  num_workers=8, pin_memory=True)
 
         captured = {n: [] for n in layer_names}
 
@@ -757,5 +759,31 @@ def load_intermediate_features(savepath, n_expected):
 
     return layer_feats
 
+
+def check_intermediate_features_complete(savepath, n_layers_expected, n_samples_expected):
+    """
+    Check whether intermediate features are fully cached without loading data into memory.
+    Reads only .npy file headers (8–128 bytes each) instead of full arrays.
+    """
+    import json
+    names_path = os.path.join(savepath, 'layer_names.json')
+    if not os.path.exists(names_path):
+        return False
+    with open(names_path) as f:
+        layer_names = json.load(f)
+    if len(layer_names) != n_layers_expected:
+        return False
+    for lname in layer_names:
+        parts = sorted(
+            [fn for fn in os.listdir(savepath)
+             if fn.startswith(f'layer_{lname}_features_') and fn.endswith('.npy')],
+            key=lambda x: int(x.split('_')[-1].replace('.npy', ''))
+        )
+        if not parts:
+            return False
+        total = sum(np.load(os.path.join(savepath, p), mmap_mode='r').shape[0] for p in parts)
+        if total != n_samples_expected:
+            return False
+    return True
 
 

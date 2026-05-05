@@ -165,13 +165,13 @@ class OODScore:
 
         if train:
             save_path = os.path.join(self.path_to_cache, 'cache_train_inter', model.model_name)
-            inter = load_intermediate_features(save_path, n_expected=len(self.dataset_in_train))
-            if inter is None or len(inter) != n_layers or overwrite not in {'no', 'ood', 'notrain'}:
+            complete = (overwrite in {'no', 'ood', 'notrain'} and
+                        utils.check_intermediate_features_complete(
+                            save_path, n_layers, len(self.dataset_in_train)))
+            if not complete:
                 print('[MM++] Train intermediate features not complete, extracting...')
                 extract_intermediate_features(model, self.dataset_in_train, save_path)
-                inter = load_intermediate_features(save_path, n_expected=len(self.dataset_in_train))
-            self.inter_train_path   = save_path
-            self.inter_feats_train  = inter  # list of [N_train, D_l] — kept for reference
+            self.inter_train_path = save_path
 
         if val:
             save_path = os.path.join(self.path_to_cache, 'cache_val_inter', model.model_name)
@@ -280,6 +280,19 @@ class OODScore:
 
         methods_results = {}
         for method in methods:
+            # Free large train arrays before MM++ (not needed, saves ~28 GB for 1.3M ID sets)
+            if method in ('MM_plus_plus', 'MM_plus_plus_topk', 'MM_plus_plus_topk_cat',
+                          'MM_plus_plus_topk_cat_k3', 'MM_plus_plus_topk_rel',
+                          'MM_plus_plus_topk_erb', 'MM_plus_plus_zscore',
+                          'MM_plus_plus_topk2_zscore', 'MM_plus_plus_topk_erb_rel',
+                          'MM_plus_plus_topk_noanchor', 'MM_plus_plus_topk_erb_comp',
+                          'MM_plus_plus_topk_pinv', 'MM_plus_plus_topk_erbcomp') \
+                    and hasattr(self, 'logits_id_train'):
+                self.logits_id_train = None
+                self.softmax_id_train = None
+                self.feature_id_train = None
+                import gc; gc.collect()
+
             if method == 'MSP':
                 scores_id, scores_ood = evaluate_MSP(self.softmax_id_val, self.softmax_ood)
             elif method == 'Energy':
@@ -290,7 +303,7 @@ class OODScore:
             elif method == 'ODIN':
                 scores_id, scores_ood = evaluate_ODIN(
                     model, self.dataset_in_val, self.dataset_out, path,
-                    T=1000, epsilon=0.0014, batch_size=model.batch_size)
+                    T=1000, epsilon=0.0014, batch_size=min(model.batch_size, 16))
             elif method == 'Mahalanobis':
                 scores_id, scores_ood = evaluate_Mahalanobis(
                     self.feature_id_train, self.feature_id_val, self.feature_ood,

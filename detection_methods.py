@@ -98,16 +98,17 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
             f_train /= norms
 
             print(f'[MM++] Layer {l+1}/{L} ({layer_name}): computing class means...')
-            train_means = []
-            centered    = []
+            d_l = f_train.shape[1]
+            train_means = np.empty((n_classes, d_l), dtype=np.float64)
+            centered_arr = np.empty((len(f_train), d_l), dtype=np.float64)
+            row = 0
             for c in tqdm(range(n_classes), desc=f'  Layer {layer_name}', leave=False):
-                fs = f_train[train_labels == c]
-                m  = fs.mean(axis=0) if len(fs) > 0 else np.zeros(f_train.shape[1])
-                train_means.append(m)
+                fs = f_train[train_labels == c].astype(np.float64)
+                m  = fs.mean(axis=0) if len(fs) > 0 else np.zeros(d_l)
+                train_means[c] = m
                 if len(fs) > 0:
-                    centered.extend(fs - m)
-
-            centered_arr = np.array(centered, dtype=np.float64)  # [N, D]
+                    centered_arr[row:row + len(fs)] = fs - m
+                    row += len(fs)
 
             print(f'[MM++] Layer {l+1}/{L} ({layer_name}): Ledoit-Wolf shrinkage...')
             lw = LedoitWolf(assume_centered=True)
@@ -127,12 +128,12 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
             eigvals /= eigvals.sum()
             er_l = float(np.exp(-np.dot(eigvals, np.log(eigvals))))
 
-            mean_l = np.array(train_means)
+            mean_l = train_means
             prec_l = lw.precision_
             np.save(mean_path, mean_l)
             np.save(prec_path, prec_l)
             np.save(er_path, er_l)
-            del f_train, centered, centered_arr  # free memory
+            del f_train, centered_arr  # free memory
 
         effective_ranks.append(er_l)
 
@@ -330,8 +331,13 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
     L = len(layer_names)
 
     # ── Ensure per-layer caches exist (build via MM_plus_plus if missing) ────
-    tag0 = f'mm_pp_{layer_names[0]}'
-    if not os.path.exists(os.path.join(path, f'{tag0}_prec.npy')):
+    all_cached = all(
+        os.path.exists(os.path.join(path, f'mm_pp_{ln}_prec.npy')) and
+        os.path.exists(os.path.join(path, f'mm_pp_{ln}_mean.npy')) and
+        os.path.exists(os.path.join(path, f'mm_pp_{ln}_er.npy'))
+        for ln in layer_names
+    )
+    if not all_cached:
         print('[TopKGating] Per-layer caches missing — fitting per-layer statistics...')
         evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
                               train_labels, path, n_classes=n_classes)
@@ -566,20 +572,7 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
                 col += d_l
                 del f_l
 
-        centered_train = fused_train - fused_means[train_labels]
-        if use_pinv:
-            print('[TopKGating] Centering + fitting pseudo-inverse precision...')
-            S = centered_train.T @ centered_train / max(len(centered_train) - 1, 1)
-            prec_fused = np.linalg.pinv(S, rcond=1e-10)
-        else:
-            print('[TopKGating] Centering + fitting Ledoit-Wolf (class-conditional)...')
-            lw = LedoitWolf(assume_centered=True)
-            lw.fit(centered_train)
-            prec_fused = lw.precision_
-        np.save(fused_mean_path, fused_means)
-        np.save(fused_prec_path, prec_fused)
-
-        # ── Optional: fit global (non-class-conditional) precision ───────────
+        # Handle relative case first (needs original, uncentered fused_train)
         if relative:
             print('[TopKGating] Fitting global Ledoit-Wolf for relative Mahalanobis...')
             global_mean_fused = fused_train.mean(axis=0)
@@ -588,7 +581,36 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
             np.save(global_mean_path, global_mean_fused)
             np.save(global_prec_path, lw_global.precision_)
 
-        del fused_train
+        # Extract a random subset for LW fitting to cap memory at ~20 GB
+        # (300K >> D_fused=1536, so LW estimate is essentially identical to full-data fit)
+        LW_FIT_SAMPLES = 300_000
+        if N_train > LW_FIT_SAMPLES:
+            rng = np.random.default_rng(42)
+            subset_idx = rng.choice(N_train, LW_FIT_SAMPLES, replace=False)
+            fit_feats  = fused_train[subset_idx].copy()   # ~3.7 GB for D=1536
+            fit_labels = train_labels[subset_idx]
+        else:
+            fit_feats  = fused_train
+            fit_labels = train_labels
+        del fused_train   # free 15.6 GB before centering
+        import gc; gc.collect()
+
+        # Center the fit subset in-place
+        fit_feats -= fused_means[fit_labels]
+
+        if use_pinv:
+            print('[TopKGating] Centering + fitting pseudo-inverse precision...')
+            S = fit_feats.T @ fit_feats / max(len(fit_feats) - 1, 1)
+            prec_fused = np.linalg.pinv(S, rcond=1e-10)
+        else:
+            print('[TopKGating] Centering + fitting Ledoit-Wolf (class-conditional)...')
+            lw = LedoitWolf(assume_centered=True)
+            lw.fit(fit_feats)
+            prec_fused = lw.precision_
+        del fit_feats
+
+        np.save(fused_mean_path, fused_means)
+        np.save(fused_prec_path, prec_fused)
 
     # ── Load global stats for relative scoring (if needed) ───────────────────
     if relative:
@@ -689,15 +711,18 @@ def evaluate_Mahalanobis(feature_id_train, feature_id_val, feature_ood, train_la
         prec = np.load(prec_path)
     else:
         print('Computing classwise means...')
-        train_means, centered = [], []
-        for i in tqdm(range(1000)):
-            fs = feature_id_train[train_labels == i]
+        n_cls, d = 1000, feature_id_train.shape[1]
+        mean = np.empty((n_cls, d), dtype=np.float64)
+        centered = np.empty((len(feature_id_train), d), dtype=np.float64)
+        row = 0
+        for i in tqdm(range(n_cls)):
+            fs = feature_id_train[train_labels == i].astype(np.float64)
             m  = fs.mean(axis=0)
-            train_means.append(m)
-            centered.extend(fs - m)
+            mean[i] = m
+            centered[row:row + len(fs)] = fs - m
+            row += len(fs)
         ec = EmpiricalCovariance(assume_centered=True)
-        ec.fit(np.array(centered).astype(np.float64))
-        mean = np.array(train_means)
+        ec.fit(centered)
         prec = ec.precision_
         np.save(mean_path, mean)
         np.save(prec_path, prec)
@@ -726,15 +751,18 @@ def evaluate_Mahalanobis_norm(feature_id_train, feature_id_val, feature_ood, tra
     else:
         print('Computing classwise means (norm)...')
         feature_id_train = feature_id_train / np.linalg.norm(feature_id_train, axis=-1, keepdims=True)
-        train_means, centered = [], []
-        for i in tqdm(range(1000)):
-            fs = feature_id_train[train_labels == i]
+        n_cls, d = 1000, feature_id_train.shape[1]
+        mean = np.empty((n_cls, d), dtype=np.float64)
+        centered = np.empty((len(feature_id_train), d), dtype=np.float64)
+        row = 0
+        for i in tqdm(range(n_cls)):
+            fs = feature_id_train[train_labels == i].astype(np.float64)
             m  = fs.mean(axis=0)
-            train_means.append(m)
-            centered.extend(fs - m)
+            mean[i] = m
+            centered[row:row + len(fs)] = fs - m
+            row += len(fs)
         ec = EmpiricalCovariance(assume_centered=True)
-        ec.fit(np.array(centered).astype(np.float64))
-        mean = np.array(train_means)
+        ec.fit(centered)
         prec = ec.precision_
         np.save(mean_path, mean)
         np.save(prec_path, prec)
@@ -777,15 +805,18 @@ def evaluate_Relative_Mahalanobis(feature_id_train, feature_id_val, feature_ood,
         prec = np.load(prec_path)
     else:
         print('Computing classwise means...')
-        train_means, centered = [], []
-        for i in tqdm(range(1000)):
-            fs = feature_id_train[train_labels == i]
+        n_cls, d = 1000, feature_id_train.shape[1]
+        mean = np.empty((n_cls, d), dtype=np.float64)
+        centered = np.empty((len(feature_id_train), d), dtype=np.float64)
+        row = 0
+        for i in tqdm(range(n_cls)):
+            fs = feature_id_train[train_labels == i].astype(np.float64)
             m  = fs.mean(axis=0)
-            train_means.append(m)
-            centered.extend(fs - m)
+            mean[i] = m
+            centered[row:row + len(fs)] = fs - m
+            row += len(fs)
         ec = EmpiricalCovariance(assume_centered=True)
-        ec.fit(np.array(centered).astype(np.float64))
-        mean = np.array(train_means)
+        ec.fit(centered)
         prec = ec.precision_
         np.save(mean_path, mean)
         np.save(prec_path, prec)
@@ -825,15 +856,18 @@ def evaluate_Relative_Mahalanobis_norm(feature_id_train, feature_id_val, feature
     else:
         print('Computing classwise means (norm)...')
         feature_id_train = feature_id_train / np.linalg.norm(feature_id_train, axis=-1, keepdims=True)
-        train_means, centered = [], []
-        for i in tqdm(range(1000)):
-            fs = feature_id_train[train_labels == i]
+        n_cls, d = 1000, feature_id_train.shape[1]
+        mean = np.empty((n_cls, d), dtype=np.float64)
+        centered = np.empty((len(feature_id_train), d), dtype=np.float64)
+        row = 0
+        for i in tqdm(range(n_cls)):
+            fs = feature_id_train[train_labels == i].astype(np.float64)
             m  = fs.mean(axis=0)
-            train_means.append(m)
-            centered.extend(fs - m)
+            mean[i] = m
+            centered[row:row + len(fs)] = fs - m
+            row += len(fs)
         ec = EmpiricalCovariance(assume_centered=True)
-        ec.fit(np.array(centered).astype(np.float64))
-        mean = np.array(train_means)
+        ec.fit(centered)
         prec = ec.precision_
         np.save(mean_path, mean)
         np.save(prec_path, prec)
