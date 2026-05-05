@@ -18,8 +18,7 @@ No fine-tuning or hyperparameter search on OOD data is required.
 
 ```bash
 conda env create -f environment.yml
-conda activate NINCO_maha
-pip install libmr==0.1.9
+conda activate mm_plus_plus
 ```
 
 ---
@@ -96,7 +95,7 @@ bash scripts/run_eval_resnet50.sh
 ### Single method / dataset (quick test)
 
 ```bash
-conda run -n NINCO_maha python evaluate.py \
+conda run -n mm_plus_plus python evaluate.py \
     --model vit_base_patch16_224.augreg2_in21k_ft_in1k \
     --method MM_plus_plus_topk_cat \
     --dataset ./data/NINCO_OOD_classes.csv \
@@ -142,17 +141,17 @@ Reproduces the offline/online cost comparison (Table 2):
 
 ```bash
 # Inference only (fast, no large RAM needed)
-conda run -n NINCO_maha python benchmark_overhead.py --skip-calib --save-fig
+conda run -n mm_plus_plus python benchmark_overhead.py --skip-calib --save-fig
 
 # Full run including calibration timing
-conda run -n NINCO_maha python benchmark_overhead.py --save-fig
+conda run -n mm_plus_plus python benchmark_overhead.py --save-fig
 ```
 
 Outputs `benchmark_overhead.pdf` and prints a summary table.
 To save each subplot as a separate PDF:
 
 ```bash
-conda run -n NINCO_maha python save_subfigs.py --skip-calib
+conda run -n mm_plus_plus python save_subfigs.py --skip-calib
 ```
 
 ---
@@ -168,5 +167,3 @@ conda run -n NINCO_maha python save_subfigs.py --skip-calib
   url       = {https://arxiv.org/abs/2505.18032}
 }
 ```
-
-This repository builds on [NINCO](https://github.com/j-cb/NINCO) and [OpenOOD](https://github.com/Jingkang50/OpenOOD); please cite their work too.
