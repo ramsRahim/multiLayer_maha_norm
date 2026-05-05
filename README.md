@@ -155,15 +155,3 @@ conda run -n mm_plus_plus python save_subfigs.py --skip-calib
 ```
 
 ---
-
-## Citation
-
-```bibtex
-@inproceedings{mueller2025mahalanobispp,
-  title     = {Mahalanobis++: Improving OOD Detection via Feature Normalization},
-  author    = {Maximilian Mueller and Matthias Hein},
-  booktitle = {ICML},
-  year      = {2025},
-  url       = {https://arxiv.org/abs/2505.18032}
-}
-```
