@@ -1,8 +1,4 @@
-# Mahalanobis++: Improving OOD Detection via Feature Normalization
-
-Maximilian Müller, Matthias Hein — **University of Tübingen / Tübingen AI Center**
-
-Paper: [https://arxiv.org/abs/2505.18032](https://arxiv.org/abs/2505.18032)
+# MM++: Unsupervised Scale-Invariant Multilayer OOD Detection via Top-K Gated Feature Fusion
 
 ---
 
