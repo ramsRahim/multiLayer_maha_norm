@@ -5,9 +5,9 @@ cd "$(dirname "$0")/.."
 
 MODEL="vit_base_patch16_224.augreg2_in21k_ft_in1k"
 CACHE="./cache_imagenet_full"
-TRAIN_DIR="/home/rahim/exp/Data/imagenet_full/train"
-VAL_DIR="/home/rahim/exp/Data/imagenet/val"
-PREFIX_OPENOOD="/home/rahim/exp/Data/openood_data"
+TRAIN_DIR="${TRAIN_DIR:-/path/to/imagenet/train}"
+VAL_DIR="${VAL_DIR:-/path/to/imagenet/val}"
+PREFIX_OPENOOD="${PREFIX_OPENOOD:-/path/to/openood_data}"
 
 METHODS=(
     MSP
@@ -23,7 +23,7 @@ METHODS=(
 )
 
 declare -A DATASETS
-DATASETS["./data/imagenet_o.csv"]="/home/rahim/exp/Data/imagenet-o"
+DATASETS["./data/imagenet_o.csv"]="${IMAGENET_O_DIR:-/path/to/imagenet-o}"
 DATASETS["./data/texture.csv"]="$PREFIX_OPENOOD"
 DATASETS["./data/places.csv"]="$PREFIX_OPENOOD"
 DATASETS["./data/inaturalist.csv"]="$PREFIX_OPENOOD"

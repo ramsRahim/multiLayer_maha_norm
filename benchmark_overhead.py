@@ -29,7 +29,7 @@ CACHE_TRAIN  = os.path.join(CACHE_BASE, 'cache_train_inter', MODEL)
 CACHE_LABELS = os.path.join(CACHE_BASE, 'cache_train', MODEL)
 CACHE_METH   = os.path.join(CACHE_BASE, 'cache_methods', MODEL)
 XMAHA_CACHE  = '/tmp/xmaha_imagenetlt_cache_vit'
-XMAHA_TRAIN_DIR = '/home/rahim/exp/X-Maha/output/imagenetlt_vit_b16_lr01'
+XMAHA_TRAIN_DIR = os.environ.get('XMAHA_TRAIN_DIR', './xmaha_output/imagenetlt_vit_b16_lr01')
 XMAHA_CKPT   = os.path.join(XMAHA_TRAIN_DIR, 'checkpoint.pth.tar')
 
 N_CLASSES    = 1000
@@ -547,30 +547,8 @@ def main():
         FS_LEGEND = 12  # legend fontsize
         FS_BANNER = 17  # section banner fontsize
 
-        fig = plt.figure(figsize=(18, 7))
-        gs = fig.add_gridspec(1, 3, wspace=0.40, left=0.07, right=0.97)
-        axes = [fig.add_subplot(gs[i]) for i in range(3)]
-
-        # ── Section banners ──
-        fig.tight_layout(rect=[0, 0, 1, 0.94])
-        # OFFLINE = axes 0 only; ONLINE = axes 1-2
-        for ax_idx, ax_end, label, col in [(0, 0, 'OFFLINE', '#d9534f'),
-                                            (1, 2, 'ONLINE',  '#337ab7')]:
-            x0 = axes[ax_idx].get_position().x0
-            x1 = axes[ax_end].get_position().x1
-            fig.text((x0 + x1) / 2, 0.97, label,
-                     ha='center', va='bottom', fontsize=FS_BANNER, fontweight='bold',
-                     color='white',
-                     bbox=dict(boxstyle='round,pad=0.35', facecolor=col, edgecolor='none'))
-
-        # Draw vertical divider between offline and online sections
-        x_div = (axes[0].get_position().x1 + axes[1].get_position().x0) / 2
-        fig.add_artist(plt.Line2D(
-            [x_div, x_div], [0.0, 0.96],
-            transform=fig.transFigure, color='gray', linewidth=1.8, linestyle='--'))
-
         # (a) OFFLINE — Deployment time (fine-tune + calibration)
-        ax = axes[0]
+        fig_a, ax = plt.subplots(figsize=(6, 5))
         ax.bar(x, ft_vals, color=[c_ft if v > 0 else 'none' for v in ft_vals], edgecolor='none')
         ax.bar(x, ct_vals, bottom=ft_vals, color=c_base)
         ax.set_xticks(x)
@@ -583,27 +561,39 @@ def main():
             if total > 0 and i < 2:
                 ax.text(x[i], total * 1.02, fmt_time(total),
                         ha='center', va='bottom', fontsize=FS_BAR)
-        ax.text(x[2] + 0.22, ft_vals[2] * 1.01,
+        ax.text(x[2], ft_vals[2] * 0.5,
                 '~29h',
-                ha='left', va='bottom', fontsize=FS_BAR, fontweight='bold', color='#333')
+                ha='center', va='center', fontsize=FS_BAR, fontweight='bold', color='white')
         ax.legend(fontsize=FS_LEGEND,
+                  loc='upper left',
                   handles=[mpatches.Patch(color=c_ft,  label='Fine-tuning (X-Maha only)'),
                             mpatches.Patch(color='#888', label='Calibration')])
+        fig_a.tight_layout()
+        path_a = os.path.join(BASE, 'benchmark_overhead_a.pdf')
+        fig_a.savefig(path_a, bbox_inches='tight', dpi=150)
+        plt.close(fig_a)
+        print(f'\nFigure (a) saved to {path_a}')
 
         # (b) OFFLINE — Memory per sample (N_layers × D × 4 bytes)
-        ax = axes[1]
+        fig_b, ax = plt.subplots(figsize=(6, 5))
         bars = ax.bar(x, mem_kb, color=c_base, edgecolor='black', linewidth=0.6)
         ax.set_xticks(x)
         ax.set_xticklabels(labels3, fontsize=FS_TICK)
         ax.set_ylabel('KB / sample', fontsize=FS_LABEL)
         ax.set_title('(b) Activation Memory\n(per sample)', fontweight='bold', fontsize=FS_TITLE)
         ax.tick_params(axis='y', labelsize=FS_TICK)
+        ax.set_ylim(0, max(mem_kb) * 1.12)
         for bar, v in zip(bars, mem_kb):
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.3,
                     f'{v:.0f} KB', ha='center', va='bottom', fontsize=FS_BAR, fontweight='bold')
+        fig_b.tight_layout()
+        path_b = os.path.join(BASE, 'benchmark_overhead_b.pdf')
+        fig_b.savefig(path_b, bbox_inches='tight', dpi=150)
+        plt.close(fig_b)
+        print(f'Figure (b) saved to {path_b}')
 
         # (c) ONLINE — GPU scoring latency
-        ax = axes[2]
+        fig_c, ax = plt.subplots(figsize=(6, 5))
         for i, (lbl, lat) in enumerate(zip(labels3, [lat_maha_gpu, lat_mmpp_gpu, lat_xm_gpu])):
             ys = [lat.get(B, float('nan')) for B in BATCH_SIZES]
             ax.plot(BATCH_SIZES, ys, marker=markers[i], color=c_base[i],
@@ -617,10 +607,11 @@ def main():
         ax.set_title('(c) GPU Scoring Latency', fontweight='bold', fontsize=FS_TITLE)
         ax.legend(fontsize=FS_LEGEND)
         ax.grid(True, alpha=0.25, linestyle='--')
-
-        fig_path = os.path.join(BASE, 'benchmark_overhead.pdf')
-        fig.savefig(fig_path, bbox_inches='tight', dpi=150)
-        print(f'\nFigure saved to {fig_path}')
+        fig_c.tight_layout()
+        path_c = os.path.join(BASE, 'benchmark_overhead_c.pdf')
+        fig_c.savefig(path_c, bbox_inches='tight', dpi=150)
+        plt.close(fig_c)
+        print(f'Figure (c) saved to {path_c}')
 
     # ── Print table (Offline | Online split) ──────────────────────────────
     print('\n')

@@ -5,10 +5,10 @@ cd "$(dirname "$0")/.."
 
 MODEL="vit_base_patch16_224.augreg2_in21k_ft_in1k"
 CACHE="./cache_imagenetlt"
-TRAIN_DIR="/home/rahim/exp/Data/imagenetlt/train"
-VAL_DIR="/home/rahim/exp/Data/imagenetlt/test"
-PREFIX_OPENOOD="/home/rahim/exp/Data/openood_data"
-PREFIX_NINCO="/home/rahim/exp/Data/NINCO/NINCO"
+TRAIN_DIR="${TRAIN_DIR:-/path/to/imagenetlt/train}"
+VAL_DIR="${VAL_DIR:-/path/to/imagenetlt/test}"
+PREFIX_OPENOOD="${PREFIX_OPENOOD:-/path/to/openood_data}"
+PREFIX_NINCO="${PREFIX_NINCO:-/path/to/NINCO/NINCO}"
 
 METHODS=(
     MSP
