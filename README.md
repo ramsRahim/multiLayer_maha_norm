@@ -4,7 +4,7 @@
 
 ## Overview
 
-Mahalanobis++ (MM++) is a **training-free, post-hoc** OOD detection method.
+Multi Layer Mahalanobis++ (MM++) is a **training-free, post-hoc** OOD detection method.
 It combines $\ell_2$-normalized features from multiple intermediate layers of any pretrained backbone into a single Mahalanobis-distance score.
 No fine-tuning or hyperparameter search on OOD data is required.
 
