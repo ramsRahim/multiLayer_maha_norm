@@ -39,6 +39,9 @@ class OODScore:
             'MM_plus_plus_zscore', 'MM_plus_plus_topk2_zscore',
             'MM_plus_plus_topk_noanchor', 'MM_plus_plus_topk_pinv',
             'MM_plus_plus_topk_erbcomp',
+            'MM_plus_plus_topk_cat_blockdiag',
+            'MM_plus_plus_topk_cat_blockdiag_indep',
+            'MM_plus_plus_topk_cat_permuted',
         ]
         self.clip_transform = None
         self.val_acc = -99
@@ -254,7 +257,7 @@ class OODScore:
             self.labels_ood = predictions_ood['labels_true']
             print('OOD done.')
 
-    def evaluate(self, model, OOD_classes, methods=['MSP'], n_bootstrap_seeds=3):
+    def evaluate(self, model, OOD_classes, methods=['MSP'], n_bootstrap_seeds=3, permute_seed=0):
         # patly adapted from https://github.com/haoqiwang/vim/blob/master/benchmark.py
         path = os.path.join(self.path_to_cache, 'cache_methods', model.model_name)
         if not os.path.exists(path):
@@ -286,7 +289,10 @@ class OODScore:
                           'MM_plus_plus_topk_erb', 'MM_plus_plus_zscore',
                           'MM_plus_plus_topk2_zscore', 'MM_plus_plus_topk_erb_rel',
                           'MM_plus_plus_topk_noanchor', 'MM_plus_plus_topk_erb_comp',
-                          'MM_plus_plus_topk_pinv', 'MM_plus_plus_topk_erbcomp') \
+                          'MM_plus_plus_topk_pinv', 'MM_plus_plus_topk_erbcomp',
+                          'MM_plus_plus_topk_cat_blockdiag',
+                          'MM_plus_plus_topk_cat_blockdiag_indep',
+                          'MM_plus_plus_topk_cat_permuted') \
                     and hasattr(self, 'logits_id_train'):
                 self.logits_id_train = None
                 self.softmax_id_train = None
@@ -450,6 +456,42 @@ class OODScore:
                     K=2,
                     use_erb_comp=True,
                 )
+            # ── Off-diagonal covariance ablation (same layers/means/features as
+            #    MM_plus_plus_topk_cat; only the fused precision structure differs) ──
+            elif method == 'MM_plus_plus_topk_cat_blockdiag':
+                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=2,
+                    concat=True,
+                    cov_mode='block_diag_same',
+                )
+            elif method == 'MM_plus_plus_topk_cat_blockdiag_indep':
+                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=2,
+                    concat=True,
+                    cov_mode='block_diag_indep',
+                )
+            elif method == 'MM_plus_plus_topk_cat_permuted':
+                scores_id, scores_ood = evaluate_MM_plus_plus_topk_gating(
+                    train_inter_path=self.inter_train_path,
+                    layer_feats_val=self.inter_feats_val,
+                    layer_feats_ood=self.inter_feats_ood,
+                    train_labels=self.train_labels,
+                    path=path,
+                    K=2,
+                    concat=True,
+                    cov_mode='permute',
+                    permute_seed=permute_seed,
+                )
             else:
                 raise NotImplementedError(f'Method {method} not implemented.')
             
@@ -554,6 +596,9 @@ methods_train_usage = {
     'MM_plus_plus_topk_noanchor': True,
     'MM_plus_plus_topk_pinv':   True,
     'MM_plus_plus_topk_erbcomp': True,
+    'MM_plus_plus_topk_cat_blockdiag':       True,
+    'MM_plus_plus_topk_cat_blockdiag_indep': True,
+    'MM_plus_plus_topk_cat_permuted':        True,
 }
 
 parser = argparse.ArgumentParser(description='OOD Evaluation on NINCO')
@@ -573,6 +618,9 @@ parser.add_argument('--train_dir', type=str, default=None,
                     help='Override the ImageNet train directory (e.g. for ImageNet-LT)')
 parser.add_argument('--n_bootstrap_seeds', type=int, default=3,
                     help='Number of RNG seeds for bootstrap CI (paper requires ≥ 3)')
+parser.add_argument('--permute_seed', type=int, default=0,
+                    help='RNG seed for the MM_plus_plus_topk_cat_permuted control '
+                         '(within-class shuffle that destroys cross-layer correspondence)')
 
 
 def main():
@@ -606,7 +654,8 @@ def main():
                                                    overwrite=args.overwrite_model_outputs)
                 OOD_classes = task.dataset_out.classes
                 task.evaluate(model, OOD_classes=OOD_classes, methods=methods,
-                              n_bootstrap_seeds=args.n_bootstrap_seeds)
+                              n_bootstrap_seeds=args.n_bootstrap_seeds,
+                              permute_seed=args.permute_seed)
                 print(f'# ood classes: {len(OOD_classes)}')
             elif model_name=='rn50supcon':
                 model = ResNetSupCon()
@@ -630,7 +679,8 @@ def main():
                 #if current_dataset.endswith('.csv'):
                 OOD_classes = task.dataset_out.classes
                 task.evaluate(model, OOD_classes=OOD_classes, methods=methods,
-                              n_bootstrap_seeds=args.n_bootstrap_seeds)
+                              n_bootstrap_seeds=args.n_bootstrap_seeds,
+                              permute_seed=args.permute_seed)
                 print(f'# ood classes: {len(OOD_classes)}')
             else:
                 raise NotImplementedError(

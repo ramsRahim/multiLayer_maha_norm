@@ -239,10 +239,83 @@ def evaluate_MM_plus_plus(train_inter_path, layer_feats_val, layer_feats_ood,
     return score_id, score_ood
 
 
+def _block_diagonal_precision(centered_feats, block_dims, mode='block_diag_same'):
+    """
+    Block-diagonal covariance control for the MM++ fused (concatenated) features.
+
+    This is the *ablation counterpart* of the full MM++ estimator. It estimates
+    the covariance of the SAME concatenated features, zeros the CROSS-LAYER
+    (off-diagonal) covariance blocks, applies Ledoit-Wolf shrinkage, and inverts.
+
+    IMPORTANT — order of operations:
+      The off-diagonal blocks are zeroed on the COVARIANCE, *before* inversion.
+      Because the shrunk covariance is block-diagonal, its inverse is exactly the
+      block-diagonal matrix of the per-block inverses (we assemble it that way).
+      This is NOT the same as inverting the full covariance and then zeroing the
+      off-diagonal blocks of the resulting precision — that would be a different
+      operation and is deliberately avoided here.
+
+    mode='block_diag_same' (same shrinkage strength):
+        Reproduces sklearn's LedoitWolf(assume_centered=True) target exactly:
+            emp_cov = Xc.T @ Xc / N            (biased, class-centered)
+            mu      = tr(emp_cov) / D
+            beta    = ledoit_wolf_shrinkage(Xc)     (single beta on full concat)
+            Sigma_bd[b] = (1-beta) * emp_cov[b,b] + beta * mu * I
+        Only the cross-layer covariance differs from full MM++; the shrinkage
+        intensity (beta) and target (mu*I) are held identical to the full fit,
+        so the comparison isolates the effect of the off-diagonal blocks alone.
+
+    mode='block_diag_indep' (independently estimated shrinkage):
+        Fits Ledoit-Wolf INDEPENDENTLY on each layer block (its own beta_l and
+        mu_l = tr(S_l)/D_l), then places each per-block precision on the diagonal.
+        Reported alongside the same-strength variant so the result does not hinge
+        on a particular shrinkage convention.
+
+    Args:
+        centered_feats: [N, D] class-mean-centered concatenated features (float64).
+        block_dims:     per-layer dims in concatenation order; must sum to D.
+        mode:           'block_diag_same' or 'block_diag_indep'.
+
+    Returns:
+        prec: [D, D] block-diagonal precision matrix (zeros off the layer blocks).
+    """
+    from sklearn.covariance import LedoitWolf, ledoit_wolf_shrinkage
+
+    N, D = centered_feats.shape
+    block_dims = [int(d) for d in block_dims]
+    assert sum(block_dims) == D, f'block dims {block_dims} sum to {sum(block_dims)} != D={D}'
+    offsets = np.cumsum([0] + block_dims)
+    prec = np.zeros((D, D), dtype=np.float64)
+
+    if mode == 'block_diag_same':
+        emp_cov = centered_feats.T @ centered_feats / N          # biased, matches sklearn
+        mu      = float(np.trace(emp_cov) / D)
+        beta    = float(ledoit_wolf_shrinkage(centered_feats, assume_centered=True))
+        print(f'[block_diag_same] shared Ledoit-Wolf beta={beta:.6f}, mu={mu:.6e}')
+        for b in range(len(block_dims)):
+            s, e  = int(offsets[b]), int(offsets[b + 1])
+            cov_b = (1.0 - beta) * emp_cov[s:e, s:e] + beta * mu * np.eye(e - s)
+            prec[s:e, s:e] = np.linalg.inv(cov_b)
+        return prec
+
+    if mode == 'block_diag_indep':
+        for b in range(len(block_dims)):
+            s, e = int(offsets[b]), int(offsets[b + 1])
+            lw_b = LedoitWolf(assume_centered=True)
+            lw_b.fit(centered_feats[:, s:e])
+            print(f'[block_diag_indep] block {b} (dim={e - s}) '
+                  f'Ledoit-Wolf beta={float(lw_b.shrinkage_):.6f}')
+            prec[s:e, s:e] = lw_b.precision_
+        return prec
+
+    raise ValueError(f'Unknown block-diagonal mode: {mode!r}')
+
+
 def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_feats_ood,
                                        train_labels, path, n_classes=1000, K=2, cache_suffix='',
                                        use_erb=False, use_erb_comp=False, relative=False,
-                                       concat=False, no_anchor=False, use_pinv=False):
+                                       concat=False, no_anchor=False, use_pinv=False,
+                                       cov_mode='full', permute_layer=None, permute_seed=0):
     """
     MM++ Top-K Information Gating (NeurIPS 2026 paper, Algorithm 1 & 2).
 
@@ -315,6 +388,21 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
         use_erb_comp:     if True, select K-1 extra layers by ER_B complementarity score
                           C(i)=ER_B[i]*(1-ER_B[i]/ER_B[final]); weights=softmax(ER_B)
         relative:         if True, subtract global Mahalanobis from fused-space scores
+        cov_mode:         fused-covariance estimator (ablation control). Layer
+                          selection, fusion, and class means are IDENTICAL across
+                          all modes; only the covariance/precision differs:
+                            'full'             — joint Ledoit-Wolf precision (default; MM++)
+                            'block_diag_same'  — zero cross-layer covariance blocks,
+                                                 same LW shrinkage as 'full', then invert
+                            'block_diag_indep' — per-layer-block LW, block-diagonal precision
+                            'permute'          — shuffle one selected layer's training
+                                                 features within each class before fitting
+                                                 the joint covariance (destroys samplewise
+                                                 cross-layer correspondence; preserves class
+                                                 means, within-layer covariance, marginals)
+        permute_layer:    (cov_mode='permute') original layer index to shuffle; if None,
+                          shuffles the earliest non-final selected layer.
+        permute_seed:     (cov_mode='permute') RNG seed for the within-class shuffle.
 
     Returns:
         score_id:  [N_val]  higher = more ID-like
@@ -483,6 +571,43 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
     if concat:
         weights = np.ones(K_sel, dtype=np.float64)
 
+    # ── Covariance-structure ablation controls ────────────────────────────────
+    # These vary ONLY how the fused precision is estimated; the selected layers,
+    # fused features, and class means below are untouched.
+    if cov_mode not in ('full', 'block_diag_same', 'block_diag_indep', 'permute'):
+        raise ValueError(f"cov_mode must be one of 'full'|'block_diag_same'|"
+                         f"'block_diag_indep'|'permute', got {cov_mode!r}")
+    if cov_mode != 'full' and is_homogeneous:
+        # Block/permute controls operate on per-layer column blocks, which only
+        # exist under concatenation fusion. Additive fusion collapses layers into
+        # a single vector with no block structure.
+        raise ValueError(
+            f"cov_mode={cov_mode!r} requires concatenation fusion; pass concat=True "
+            f"(additive/homogeneous fusion has no per-layer covariance blocks)."
+        )
+    perm_pos = None
+    if cov_mode == 'permute':
+        final_sel = int(max(sel_idx))
+        if permute_layer is None:
+            non_final = [p for p, l in enumerate(sel_idx) if int(l) != final_sel]
+            perm_pos  = non_final[0] if non_final else 0
+        else:
+            matches = [p for p, l in enumerate(sel_idx) if int(l) == int(permute_layer)]
+            if not matches:
+                raise ValueError(f'permute_layer={permute_layer} is not among the '
+                                 f'selected layers {sel_idx.tolist()}')
+            perm_pos = matches[0]
+        print(f'[TopKGating][permute] Will shuffle layer '
+              f'{layer_names[int(sel_idx[perm_pos])]} (idx {int(sel_idx[perm_pos])}) '
+              f'within class, seed={permute_seed}.')
+    cov_str = {
+        'full':             '',
+        'block_diag_same':  '_bdsame',
+        'block_diag_indep': '_bdindep',
+        'permute':          (f'_perm{int(sel_idx[perm_pos])}_s{permute_seed}'
+                             if perm_pos is not None else '_perm'),
+    }[cov_mode]
+
     # ── Helper: fast CPU Mahalanobis scoring ──────────────────────────────────
     def _fast_maha(feats, means, prec):
         """feats:[N,D], means:[C,D], prec:[D,D] -> [N] scores"""
@@ -501,11 +626,11 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
     wt_str    = '_uw' if concat else ''   # 'uw' = uniform weights
     prec_str  = '_pinv' if use_pinv else ''
     if is_homogeneous:
-        fused_tag = f'mm_pp_topk{K}_{sel_str}{rel_str}{prec_str}{cache_suffix}'
+        fused_tag = f'mm_pp_topk{K}_{sel_str}{rel_str}{prec_str}{cov_str}{cache_suffix}'
         D_fused   = sel_dims[0]
         print(f'[TopKGating] Homogeneous (dim={D_fused}). Additive fusion.')
     else:
-        fused_tag = f'mm_pp_topk{K}_{sel_str}_cat{wt_str}{rel_str}{prec_str}{cache_suffix}'
+        fused_tag = f'mm_pp_topk{K}_{sel_str}_cat{wt_str}{rel_str}{prec_str}{cov_str}{cache_suffix}'
         D_fused   = sum(sel_dims)
         print(f'[TopKGating] {"Forced " if concat else ""}Concatenation fusion, joint dim={D_fused}.')
 
@@ -595,15 +720,40 @@ def evaluate_MM_plus_plus_topk_gating(train_inter_path, layer_feats_val, layer_f
         del fused_train   # free 15.6 GB before centering
         import gc; gc.collect()
 
-        # Center the fit subset in-place
+        # ── Permutation control (cov_mode='permute') ──────────────────────────
+        # Shuffle one selected layer's block within each class, so each sample's
+        # kept-layer sub-vector is paired with a *different* same-class sample's
+        # shuffled-layer sub-vector. This preserves class means, within-layer
+        # covariance, marginal layer distributions, and dimensionality, while
+        # destroying samplewise cross-layer correspondence. Done before centering.
+        if cov_mode == 'permute':
+            b_start = int(sum(sel_dims[:perm_pos]))
+            b_end   = b_start + int(sel_dims[perm_pos])
+            cols    = np.arange(b_start, b_end)
+            rng_p   = np.random.default_rng(permute_seed)
+            print(f'[TopKGating][permute] Shuffling cols [{b_start}:{b_end}] '
+                  f'(layer {layer_names[int(sel_idx[perm_pos])]}) within each class...')
+            for c in np.unique(fit_labels):
+                idx_c = np.where(fit_labels == c)[0]
+                if len(idx_c) > 1:
+                    perm = rng_p.permutation(len(idx_c))
+                    # RHS fancy-indexing returns a copy, so no aliasing on assignment.
+                    fit_feats[np.ix_(idx_c, cols)] = fit_feats[np.ix_(idx_c[perm], cols)]
+
+        # Center the fit subset in-place (class means preserved under permutation)
         fit_feats -= fused_means[fit_labels]
 
-        if use_pinv:
-            print('[TopKGating] Centering + fitting pseudo-inverse precision...')
+        if cov_mode in ('block_diag_same', 'block_diag_indep'):
+            print(f'[TopKGating] Fitting block-diagonal precision ({cov_mode}); '
+                  f'block dims={[int(d) for d in sel_dims]}...')
+            prec_fused = _block_diagonal_precision(fit_feats, sel_dims, mode=cov_mode)
+        elif use_pinv:
+            print('[TopKGating] Fitting pseudo-inverse precision...')
             S = fit_feats.T @ fit_feats / max(len(fit_feats) - 1, 1)
             prec_fused = np.linalg.pinv(S, rcond=1e-10)
         else:
-            print('[TopKGating] Centering + fitting Ledoit-Wolf (class-conditional)...')
+            label = 'permuted ' if cov_mode == 'permute' else ''
+            print(f'[TopKGating] Fitting {label}Ledoit-Wolf precision (class-conditional)...')
             lw = LedoitWolf(assume_centered=True)
             lw.fit(fit_feats)
             prec_fused = lw.precision_
