@@ -1,0 +1,6 @@
+# Joint-covariance artifacts are derived data and can be large
+# (ViT-B/16, 12 blocks x 768 -> 9216^2 float64 ~ 680 MB before compression).
+# They are rebuildable from the feature caches by run_selection.py, so they stay
+# out of git. Everything else here -- the JSON/CSV results -- MUST be committed:
+# that is the audit trail the NeurIPS submission lacked.
+*.npz
