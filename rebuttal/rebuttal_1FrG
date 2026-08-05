@@ -1,0 +1,207 @@
+## Reviewer 1FrG 
+
+We thank the reviewer for the constructive comments addressed below. 
+
+
+### Weaknesses
+
+> **“Weakness 1: The performance gains over single-layer baselines are modest.”**
+
+**Response:** We respectfully disagree that the performance gains are modest. 
+
+1. ImageNet-1K (Table 1): Over the best single layer baseline (Maha++), MM++ gains +2.36 AUROC (+2.63%) and cuts FPR95 by 10.96 points (23.35% relative reduction). 
+
+2. ImageNet-LT (Table 2): MM++ improves AUROC by 3.69 AUROC (+4.60%) and reduces FPR95 by 9.51 points (-15.93%).
+
+3. Across backbones (Tables 7-8): On ImageNet-LT, MM++ gains 2.32 AUROC (+3.15%) and reduces FPR95 by 2.60 points (-3.77%) over the best single-layer baseline, rMaha++. 
+
+
+---
+> **“Weakness 2: The theoretical justification in Appendix A is informal—it provides intuitions about neural collapse, cross-layer consistency, and shrinkage stability, but offers no formal theorems, error bounds, or convergence guarantees.”**
+
+**Response:** We thank the reviewer for this constructive feedback. We will update Appendix A to clearly separate conceptual motivation from formal theoretical bounds:
+
+- **Bounded Feature Residuals:** With $K$ $\ell_2$-normalized feature blocks ($\Vert{}\phi_k(x)\Vert{}_2 = 1$), the centered residual $r_c(x) = \phi(x) - \mu_c$ satisfies $\Vert{}r_c(x)\Vert{}_2^2 \le 4K$.
+
+$$
+\|r_c(x)\|_2^2 \leq 4K.
+$$
+
+- **Score Perturbation Bound:** For population precision $\Omega=\Sigma^{-1}$ and estimate $\widehat{\Omega}$: 
+
+$$
+\left|
+r_c^\top\widehat{\Omega}r_c-r_c^\top\Omega r_c
+\right|
+\leq
+\|\widehat{\Omega}-\Omega\|_2\|r_c\|_2^2
+\leq
+4K\|\widehat{\Omega}-\Omega\|_2.
+$$
+
+By 1-Lipschitz continuity of the class-wise minimum, the overall MM++ score error is similarly bounded by $4K \Vert{}\widehat{\Omega} - \Omega\Vert{}_2$.
+
+- **Spectral Control via Shrinkage:** Ledoit–Wolf shrinkage ($\widehat{\Sigma} = (1 - \gamma)\widehat{\Sigma} + \gamma \bar{\lambda} I$) bounds the minimum eigenvalue $\lambda_{\min}(\widehat{\Sigma}) \ge \gamma \bar{\lambda} > 0$, ensuring a finite spectral norm $\Vert{}\widehat{\Sigma}^{-1}\Vert{}_2 \le \frac{1}{\gamma \bar{\lambda}}$.
+
+We will formally present these perturbation and stability bounds as Proposition A.1 and Proposition A.2 in Appendix A, citing asymptotic consistency results for Ledoit–Wolf covariance estimation.
+
+
+
+---
+> **“Weakness 3: The Gaussianity assumption underlying the Mahalanobis distance in the high-dimensional concatenated space (D_K can reach 2 x 768 = 1536 for K=2) should be empirically validated.”**
+
+**Response:** We agree the Gaussianity assumption in high dimensions ($D_{K} = 1536$ for $K=2$) warrants empirical validation. We have conducted multivariate normality analyses measuring skewness, excess kurtosis, and Mardia’s multivariate kurtosis ratio across features. As shown in the table below, feature representations in MM++ (concatenated and block $\ell_2$-normalized, $D=1536$) lie substantially closer to ideal multivariate Gaussianity than both standard single-layer Maha ($D=768$) and normalized single-layer Maha++ ($D=768$):
+
+| Backbone | Metric | Maha | Maha++ | MM++ | Ideal Gaussian |
+|---|---|---:|---:|---:|:---:|
+| **ViT-B/16**  | Mean absolute skew ↓ | 0.034 | 0.024 | **0.019** | 0 |
+|  | Mean absolute excess kurtosis ↓ | 2.116 | 0.894 | **0.609** | 0 |
+|  | Mardia ratio $(\rightarrow 1)$ | 1.661 | 1.261 | **1.102** | 1 |
+| **Swin-T** | Mean absolute skew ↓ | 0.044 | 0.022 | **0.019** | 0 |
+|  | Mean absolute excess kurtosis ↓ | 2.458 | 0.864 | **0.629** | 0 |
+|  | Mardia ratio $(\rightarrow 1)$ | 1.748 | 1.249 | **1.141** | 1 |
+
+
+
+---
+> **“Weakness 4: No statistical significance tests or error bars are reported.”**
+
+**Response:** 
+
+We agree that reporting statistical variance is critical to show empirical stability. We conducted 5-seed evaluations for all three backbone architectures.
+
+**Validation Protocol:** For each of 5 random seeds, we drew a stratified $90/10$ class-balanced split of the ImageNet-LT training set, refit the detector on the $90\%$ partition, and evaluated the held-out $10\%$ partition as ID against each OOD benchmark.
+
+**Statistical Significance & Key Takeaways:**
+1. **Very Low Variance:** Standard deviations across 5 splits are consistently minimal ($\le 0.15$ for AUROC and $\le 2.12$ for $\text{FPR}_{95}$ across all settings), confirming high empirical stability under data resampling.
+
+2. **Statistically Significant Margins:** The performance gaps between Maha++ and MM++ far exceed the error bounds (e.g., $+2.88$ average AUROC and $-6.42$ average $\text{FPR}_{95}$ on ViT-B/16), confirming that improvements are statistically significant rather than artifacts of split selection.
+
+3. **Architectural Generalization:** The statistically significant gains hold across standard ViTs, hierarchical ViTs (Swin-T), and modern ConvNets (ConvNeXt-T).
+
+**5-Seed Statistical Results ($\text{AUROC} \pm \text{std} \;/\; \text{FPR}_{95} \pm \text{std}$):**
+
+
+**ViT-B/16 on ImageNet-LT as ID**
+| Method | NINCO | OpenImage-O | ImageNet-C | ImageNet-ES | ImageNet-R | ImageNet-V2 | Average |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Maha++ | 93.47 ± 0.10 / 33.27 ± 1.00 | 97.47 ± 0.07 / 13.07 ± 0.55 | 79.99 ± 0.13 / 62.50 ± 0.67 | 78.40 ± 0.15 / 60.17 ± 2.12 | 90.54 ± 0.10 / 35.25 ± 0.77 | 65.54 ± 0.15 / 82.20 ± 0.53 | 84.23 / 47.74 |
+| MM++ | 94.01 ± 0.08 / 30.54 ± 0.94 | 97.75 ± 0.04 / 11.48 ± 0.48 | 87.73 ± 0.08 / 45.77 ± 0.56 | 85.05 ± 0.10 / 46.33 ± 0.40 | 91.63 ± 0.07 / 32.15 ± 0.59 | 66.50 ± 0.15 / 81.67 ± 0.50 | 87.11 / 41.32 |
+
+**Swin-T on ImageNet-LT as ID**
+| Method | NINCO | OpenImage-O | ImageNet-C | ImageNet-ES | ImageNet-R | ImageNet-V2 | Average |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Maha++ | 89.92 ± 0.08 / 44.48 ± 0.88 | 95.57 ± 0.07 / 23.26 ± 1.09 | 83.50 ± 0.05 / 49.93 ± 0.66 | 80.81 ± 0.05 / 55.07 ± 0.70 | 91.35 ± 0.08 / 32.00 ± 1.03 | 64.72 ± 0.07 / 83.18 ± 0.65 | 84.31 / 47.99 |
+| MM++ | 89.26 ± 0.08 / 47.55 ± 0.57 | 94.88 ± 0.05 / 26.67 ± 0.71 | 88.98 ± 0.04 / 36.54 ± 0.30 | 88.86 ± 0.04 / 36.06 ± 0.27 | 91.89 ± 0.06 / 30.79 ± 0.62 | 66.01 ± 0.08 / 83.27 ± 0.28 | 86.65 / 43.48 |
+
+**ConvNeXt-T on ImageNet-LT as ID**
+| Method | NINCO | OpenImage-O | ImageNet-C | ImageNet-ES | ImageNet-R | ImageNet-V2 | Average |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Maha++ | 91.88 ± 0.10 / 34.87 ± 0.94 | 96.52 ± 0.08 / 18.19 ± 0.78 | 84.90 ± 0.07 / 48.17 ± 0.67 | 80.85 ± 0.07 / 58.90 ± 0.95 | 91.82 ± 0.08 / 29.98 ± 0.72 | 66.63 ± 0.09 / 78.99 ± 0.55 | 85.43 / 44.85 |
+| MM++ | 92.02 ± 0.12 / 34.52 ± 0.95 | 96.61 ± 0.09 / 17.48 ± 0.83 | 87.38 ± 0.07 / 42.64 ± 0.59 | 83.74 ± 0.08 / 50.94 ± 0.75 | 92.26 ± 0.09 / 28.61 ± 0.66 | 66.95 ± 0.13 / 79.14 ± 0.55 | 86.49 / 42.22 |
+
+
+---
+> **“Weakness 5: The non-monotonic behavior of K (performance drops at K=3 before recovering) is attributed to information redundancy without rigorous analysis.”**
+
+**Response:** 
+
+Following the reviewer’s suggestion, we conducted **CKA, CCA, and covariance conditioning analyses to explain the performance drop at $K=3$.** As shown below, adding block_11 at $K=3$ introduces near-total redundancy with the penultimate layer (CKA = $0.944$, Mean CCA = $0.976$, Residual Variance = $3.3\%$) while worsening covariance conditioning ($5.21 \to 6.03$):
+
+| $K$ | Added Layer | CKA with Penultimate Layer | Mean Canonical Correlation | Residual variance | Covariance Condition Number | Mean AUROC |
+|---:|---|---:|---:|---:|---:|---:|
+| 2 | `block_04` | 0.140 | 0.205 | 0.403 | 5.21 | **81.12** |
+| 3 | `block_11` | **0.944** | **0.976** | **0.033** | **6.03** | 78.58 |
+
+**Controlled Redundancy Experiment:** To isolate redundancy from dimensionality, we replaced block_11 with the less redundant block_06 at fixed $K=3$ dimension. This single swap increased Mean AUROC from 78.58 to 83.41, confirming that representation redundancy (and resulting covariance ill-conditioning) drives the $K=2 \to 3$ degradation. Partial performance recovery at $K > 3$ occurs when subsequently added blocks reintroduce non-redundant hierarchical features. We will update Section 4 and Appendix B with these findings.
+
+### Questions
+---
+> **“Questions 1: The non-monotonic K sensitivity (performance drop at K=3, recovery at K=5) is attributed to information redundancy. Can the authors provide quantitative evidence (e.g., pairwise feature similarity across selected layers, condition number of the joint covariance as K increases) to support this claim?”**
+
+**Response:** Please refer to our response to Weakness 5.
+
+
+> **“Question 2: Table 9 shows that Ledoit-Wolf vs. empirical covariance makes negligible difference for single-layer Maha++. However, the paper claims LW shrinkage is crucial for the multilayer fused space. Could the authors provide the analogous ablation (EC vs. LW) in the fused space to directly validate this claim? Current Table 3 only compares pseudo-inverse vs. LW, not EC vs. LW in the multilayer setting.”**
+
+**Response:** We conducted the requested ablation comparing EC and LW shrinkage within the multilayer fused space ($D_K = 1536$) across the full and data-constrained settings. As shown below, LW boosts performance in most cases, validating our claim:
+
+| Method | iNaturalist | SUN | Places365 | Textures | ImageNet-O | Avg |
+|---|---:|---:|---:|---:|---:|---:|
+| MM++ EC, full 1.28M | 96.93 | 85.75 | 80.68 | 97.81 | 92.40 | 90.71 |
+| **MM++ LW, full 1.28M** | **97.57** | **86.63** | **81.67** | **97.86** | **92.82** | **91.31** |
+| MM++ EC, 115K | 96.87 | 85.62 | 80.52 | **97.80** | 92.31 | 90.62 |
+| **MM++ LW, 115K** | **98.60** | **88.18** | **83.39** | 97.47 | **93.18** | **92.16** |
+
+**Key Observations:** 
+1. **Multilayer vs. Single-Layer Contrast:** In Table 9 (single-layer, $D=768$), LW and EC perform almost identically ($\Delta \le 0.05$ AUROC). In contrast, in the multilayer fused space ($D_{\mathcal{K}}=1536$), LW improves mean AUROC by +0.60 points under full calibration (1.28M) and by +1.54 points under reduced calibration (115K).
+
+2. **Mechanism:** Concatenating features across layers doubles the feature dimension ($D_{\mathcal{K}}$), which increases the condition number of the empirical covariance matrix $\widehat{\Sigma}$ and amplifies estimation noise. LW shrinkage regularizes off-diagonal variance, restoring eigenvalue stability. 
+
+We will add this ablation to Section 4 and Table 3.
+
+
+---
+> **“Question 3: On ImageNet-1K, MM++ underperforms X-Mahalanobis by ~2 AUROC points on average. The authors frame this as competitive given the post-hoc constraint. Could the authors discuss whether the cross-layer modeling benefit diminishes when the ID distribution is balanced and well-represented, and whether near-OOD improvements justify far-OOD degradation?”**
+
+**Response:**  
+
+**1. Cross-Layer Modeling & Post-Hoc Constraints:**
+The cross-layer modeling benefit does **not** diminish when the ID distribution is balanced and well-represented. But, naive multi-layer feature fusion of without fine-tuning (X-Maha w/o FT) can degrade performance compared to single-layer baselines.
+
+**ViT-B/16 on ImageNet-1K (ID) Benchmark ($\text{AUROC} \uparrow \;/\; \text{FPR}_{95} \downarrow$):**
+
+| Method | Average |
+|---|---:|
+| Maha | 87.32 / 56.45 |
+| rMaha | 88.32 / 52.40 |
+| Maha++ | 89.82 / 46.94 |
+| rMaha++ | 89.85 / 47.00 |
+| X-Maha w/o FT | 88.74 / 47.90 |
+| MM++ (Ours) | **92.18 / 35.98** |
+
+
+**2. Near-OOD vs. Far-OOD Evaluation**: To address whether near-OOD improvements cause far-OOD degradation, we evaluated MM++ against the standard OpenOOD benchmark with ImageNet-1K as ID across both near- and far-OOD sets:
+
+**Near-OOD Benchmark ($\text{AUROC} \uparrow \;/\; \text{FPR}_{95} \downarrow$):**
+| Method | SSB-hard | NINCO | Average |
+|---|---:|---:|---:|
+| Maha++ | 77.39 / **67.37** | 90.68 / 46.09 | 84.03 / 56.73 |
+| MM++ | **77.92** / 66.57 | **91.48** / **42.40** | **84.70** / **54.48** |
+
+**Far-OOD Benchmark ($\text{AUROC} \uparrow \;/\; \text{FPR}_{95} \downarrow$):**
+| Method | iNaturalist | Texture | OpenImage-O | Average |
+|---|---:|---:|---:|---:|
+| Maha++ | **98.78** / 5.28 | 89.27 / 48.48 | 95.85 / 24.32 | 94.63 / 26.03 |
+| MM++ | 98.70 / **5.03** | **95.97** / **19.34** | **96.44** / **20.53** | **97.04** / **14.97** |
+
+For both near- and far- OOD datasets, MM++ consistently outperforms the best single-layer baseline (Maha++). 
+
+---
+
+> **“ Limitations 1: The Gaussianity assumption in the high-dimensional concatenated space is never empirically validated or discussed as a limitation.”**
+
+**Response:**
+ We thank the reviewer for this suggestion. We have empirically validated feature Gaussianity and will explicitly incorporate the residual Gaussian approximation as a limitation in Section 5 and Appendix E.
+
+**1. Empirical Validation:**
+Please refer to our response at Weakness 3.
+
+**2. Key Findings & Limitation:** 
+- **Improved Compatability:** Block $\ell_2$-normalization and multi-layer fusion significantly dampen heavy tails (reducing excess kurtosis from $>2.1 \to 0.6$) and align the feature space much closer to multivariate normality than single-layer spaces (Mardia ratio $1.66 \to 1.10$).
+- **Residual Limitation:** As the reviewer notes, deep net representations are non-linear transformations that rarely obey exact infinite-sample multivariate normality. Mahalanobis distance remains a second-order quadratic approximation.
+
+We will add this quantitative validation table and Q-Q plots to Appendix B, and explicitly discuss second-order Gaussian approximation as a scope limitation in Appendix E (Limitations).
+
+---
+
+> **“Limitations 2: The method's effectiveness depends on the pretrained model exhibiting clear neural collapse; the paper does not discuss what happens with weakly trained or undertrained models.”**
+
+**Response:**
+We appreciate this constructive point and will explicitly document this boundary condition in Appendix E. MM++ requires the pretrained backbone to exhibit clear class-conditional cluster structure (low intra-class variance) to reliably estimate feature statistics. In undertrained or weakly trained models with overlapping ID class clusters:
+
+- **Distorted Distance Metrics:** Noisy class means $\mu_c$ and ill-conditioned covariance matrices $\Sigma$ reduce distance discriminative power.
+
+- **Layer-Selector Degradation:** Overlapping class posteriors elevate entropy across blocks, preventing the selector from identifying optimal layer subsets.
+
+While this reliance on well-structured feature spaces is shared by all post-hoc feature-based detectors, we will add a dedicated subsection in Appendix E detailing this boundary condition and discussing feature convergence as a prerequisite.
